@@ -3,29 +3,27 @@
 <div class="container-center">
     <h1 class="page-name">My Items</h1>
     <div class="items-table-container">
-        <table style="width:100%">
+        <table style="width:100%" id="employee_table">
             <tr id="myHeader">
                 <th>Id</th>
                 <th>Article</th>
                 <th>Name</th>
                 <th>Brand</th>
                 <th>Price</th>
-                <th>Price Before Discount</th>
                 <th>Tools</th>
             </tr>
-            <tr>
+            <!--tr>
                 <td>example id 1</td>
                 <td>example article 1</td>
                 <td>example name 1</td>
                 <td>example brand 1</td>
                 <td>example price 1</td>
-                <td>example price before discount 1</td>
-                <td><button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">+</button>
-                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">V</button>
-                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">/</button>
-                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">X</button>
+                <td><button class="tool-btn round-btn-sm" >+</button>
+                    <button class="tool-btn round-btn-sm" >V</button>
+                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>
+                    <button class="tool-btn round-btn-sm">X</button>
                 </td>
-            </tr>
+            </tr-->
         </table>
     </div>
     <br>
@@ -68,27 +66,60 @@
         </div>
     </div>
 </div>
+<!-- Edit form Modal -->
+<div class="modal fade" id="editformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="#">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myEditModalLabel">Edit Item</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edititemid">Item id: </label>
+                        <input type="text" class="form-control" name="itemid" id="edititemid"/>
+                        <label for="edititemart">Item Article: </label>
+                        <input type="text" class="form-control" name="itemart" id="edititemart"/>
+                        <label for="edititemname">Item name: </label>
+                        <input type="text" class="form-control" name="itemname" id="edititemname"/>
+                        <label for="edititembrand">Item brand: </label>
+                        <input type="text" class="form-control" name="itembrand" id="edititembrand"/>
+                        <label for="edititemprice">Item price: </label>
+                        <input type="text" class="form-control" name="itemprice" id="edititemprice"/>
+                        <label for="edititempricebdiscount">Item price before discount: </label>
+                        <input type="text" class="form-control" name="itempricebdiscount" id="edititempricebdiscount"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Save"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- File upload form Modal -->
 <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="#">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myfileLabel">CSV File Upload</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="file" class="csv-file" accept=".csv"/>
+                        <input type="file" id="csv-file" accept=".csv"/>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-warning" value="Upload"/>
+                    <button type="button" name="load_data" id="load_data" class="btn btn-warning" data-dismiss="modal">Load Data</button>
                 </div>
-            </form>
         </div>
     </div>
 </div>
+<div id="editor"></div>
 <% include common/top_panel.ejs %>
 <% include common/footer.ejs %>

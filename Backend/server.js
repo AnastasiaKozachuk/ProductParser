@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
+var favicon = require('serve-favicon');
 var mongoose = require('mongoose');
 
 function configureEndpoints(app) {
@@ -10,6 +11,7 @@ function configureEndpoints(app) {
     app.get('/', pages.homePage);
 
     app.use(express.static(path.join(__dirname, '../Frontend/www')));
+    app.use(favicon(path.join(__dirname, '../Frontend/www/assets/images/favicon.ico')));
 }
 
 function startServer(port) {
