@@ -1,0 +1,94 @@
+<% include common/header.ejs %>
+<body>
+<div class="container-center">
+    <h1 class="page-name">My Items</h1>
+    <div class="items-table-container">
+        <table style="width:100%">
+            <tr id="myHeader">
+                <th>Id</th>
+                <th>Article</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Price Before Discount</th>
+                <th>Tools</th>
+            </tr>
+            <tr>
+                <td>example id 1</td>
+                <td>example article 1</td>
+                <td>example name 1</td>
+                <td>example brand 1</td>
+                <td>example price 1</td>
+                <td>example price before discount 1</td>
+                <td><button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">+</button>
+                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">V</button>
+                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">/</button>
+                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#formModal">X</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <a  href="#">
+        <button class="back-to-top-btn round-btn">^</button>
+    </a>
+    <button class="add-new-item-btn round-btn" data-toggle="modal" data-target="#formModal">+</button>
+    <button class="upload-csv-btn round-btn" data-toggle="modal" data-target="#fileModal">CSV</button>
+</div>
+<!-- Add form Modal -->
+<div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="#">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add New Item</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="itemid">Item id: </label>
+                        <input type="text" class="form-control" name="itemid" id="itemid"/>
+                        <label for="itemart">Item Article: </label>
+                        <input type="text" class="form-control" name="itemart" id="itemart"/>
+                        <label for="itemname">Item name: </label>
+                        <input type="text" class="form-control" name="itemname" id="itemname"/>
+                        <label for="itembrand">Item brand: </label>
+                        <input type="text" class="form-control" name="itembrand" id="itembrand"/>
+                        <label for="itemprice">Item price: </label>
+                        <input type="text" class="form-control" name="itemprice" id="itemprice"/>
+                        <label for="itempricebdiscount">Item price before discount: </label>
+                        <input type="text" class="form-control" name="itempricebdiscount" id="itempricebdiscount"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="save"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- File upload form Modal -->
+<div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="#">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myfileLabel">CSV File Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="file" class="csv-file" accept=".csv"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Upload"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<% include common/top_panel.ejs %>
+<% include common/footer.ejs %>
