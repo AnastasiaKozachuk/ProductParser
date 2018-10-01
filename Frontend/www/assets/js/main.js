@@ -47,7 +47,7 @@ function displayData(csv_data){
             table_data += '<th>Інструменти</th>';
         }
         if(wasData){
-            table_data += '<td><button class="tool-btn round-btn-sm" >+</button>\n';
+            table_data += '<td><a href="/item"><button class="tool-btn round-btn-sm" >+</button></a>\n';
             table_data += '<button class="tool-btn round-btn-sm" >V</button>';
             table_data += '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>';
             table_data += '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button></td>';

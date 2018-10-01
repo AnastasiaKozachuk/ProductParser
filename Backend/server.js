@@ -10,6 +10,7 @@ function configureEndpoints(app) {
 
     app.get('/', pages.homePage);
     app.get('/competitors', pages.competitorsPage);
+    app.get('/item', pages.viewItemPage);
 
     app.use(express.static(path.join(__dirname, '../Frontend/www')));
     app.use(favicon(path.join(__dirname, '../Frontend/www/assets/images/favicon.ico')));

@@ -9,3 +9,9 @@ exports.competitorsPage = function(req, res) {
         pageTitle: 'My Competitors'
     });
 };
+
+exports.viewItemPage = function(req, res) {
+    res.render('viewItemPage', {
+        pageTitle: 'Item Info'
+    });
+};
