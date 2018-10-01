@@ -9,6 +9,7 @@ function configureEndpoints(app) {
     var pages = require('./pages');
 
     app.get('/', pages.homePage);
+    app.get('/competitors', pages.competitorsPage);
 
     app.use(express.static(path.join(__dirname, '../Frontend/www')));
     app.use(favicon(path.join(__dirname, '../Frontend/www/assets/images/favicon.ico')));
@@ -16,21 +17,21 @@ function configureEndpoints(app) {
 
 function startServer(port) {
     mongoose.connect('mongodb://localhost/Companies', { useNewUrlParser: true });
-    var db =	mongoose.connection;
+    var db = mongoose.connection;
 
-    db.on('error',	function	(err)	{
-        console.log('connection	error:',	err.message);
+    db.on('error', function (err) {
+        console.log('connection	error:', err.message);
     });
-    db.once('open',	function	callback	()	{
-        console.log("Connected	to	DB!");
+    db.once('open',	function callback () {
+        console.log("Connected to DB!");
     });
 
-    var GoodsSchema =	new	mongoose.Schema({
+    var GoodsSchema = new mongoose.Schema({
         id:	Number,
         vendorCode:	Number,
         name: String,
-        brand:	String,
-        price:	Number
+        brand: String,
+        price: Number
     });
 
     var CompetitorsSchema =	new	mongoose.Schema({
@@ -39,16 +40,12 @@ function startServer(port) {
         name: String,
         site: String,
         url:String
-
     });
 
-    var Goods	=	mongoose.model('Goods',	GoodsSchema);
-    var Competitors	=	mongoose.model('Competitors',	CompetitorsSchema);
+    var Goods = mongoose.model('Goods', GoodsSchema);
+    var Competitors	= mongoose.model('Competitors', CompetitorsSchema);
 
-
-
-
-    var app= express();
+    var app = express();
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());

@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    $('.competitor-item').click(function(){
+        $('.side-panel-competitors-center>div.selected-competitor').removeClass("selected-competitor");
+        $(this).addClass('selected-competitor');
+    });
+
     $('#load_data').click(function(){
         var input_csv = document.getElementById('csv-file');
         var file = input_csv.files[0];
@@ -9,7 +14,6 @@ $(document).ready(function(){
             displayData(csv_data);
         }
     });
-
 });
 
 function displayData(csv_data){
@@ -45,7 +49,7 @@ function displayData(csv_data){
             table_data += '<td><button class="tool-btn round-btn-sm" >+</button>\n';
             table_data += '<button class="tool-btn round-btn-sm" >V</button>';
             table_data += '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>';
-            table_data += '<button class="tool-btn round-btn-sm">X</button></td>';
+            table_data += '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button></td>';
         }
         table_data += '</tr>';
     }

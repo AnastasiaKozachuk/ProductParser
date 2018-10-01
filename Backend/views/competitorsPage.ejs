@@ -1,39 +1,37 @@
 <% include common/header.ejs %>
 <body>
 <div class="container-center">
-    <h1 class="page-name">My Items</h1>
-    <div class="items-table-container">
+
+    <div class="competitors-table-container">
         <table style="width:100%" id="employee_table">
             <tr id="myHeader">
                 <th>Id</th>
                 <th>Article</th>
                 <th>Name</th>
-                <th>Brand</th>
-                <th>Price</th>
+                <th>Website</th>
+                <th>URL</th>
                 <th>Tools</th>
             </tr>
-            <!--tr>
+            <tr>
                 <td>example id 1</td>
                 <td>example article 1</td>
                 <td>example name 1</td>
-                <td>example brand 1</td>
-                <td>example price 1</td>
-                <td><button class="tool-btn round-btn-sm" >+</button>
+                <td>example website 1</td>
+                <td>example URL 1</td>
+                <td>
                     <button class="tool-btn round-btn-sm" >V</button>
                     <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>
-                    <button class="delete-item tool-btn round-btn-sm">X</button>
+                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button>
                 </td>
-            </tr-->
+            </tr>
         </table>
     </div>
     <br>
     <a  href="#">
         <button class="back-to-top-btn round-btn">^</button>
     </a>
-    <button class="add-new-item-btn round-btn" data-toggle="modal" data-target="#formModal">+</button>
-    <button class="upload-csv-btn round-btn" data-toggle="modal" data-target="#fileModal">CSV</button>
 </div>
-<!-- Add form Modal -->
+<!-- Add Competitor item form Modal -->
 <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -50,12 +48,10 @@
                         <input type="text" class="form-control" name="itemart" id="itemart"/>
                         <label for="itemname">Item name: </label>
                         <input type="text" class="form-control" name="itemname" id="itemname"/>
-                        <label for="itembrand">Item brand: </label>
-                        <input type="text" class="form-control" name="itembrand" id="itembrand"/>
-                        <label for="itemprice">Item price: </label>
-                        <input type="text" class="form-control" name="itemprice" id="itemprice"/>
-                        <label for="itempricebdiscount">Item price before discount: </label>
-                        <input type="text" class="form-control" name="itempricebdiscount" id="itempricebdiscount"/>
+                        <label for="website">Website: </label>
+                        <input type="text" class="form-control" name="website" id="website"/>
+                        <label for="url">Url: </label>
+                        <input type="text" class="form-control" name="url" id="url"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -66,7 +62,33 @@
         </div>
     </div>
 </div>
-<!-- Edit form Modal -->
+<!-- Add Competitor form Modal -->
+<div class="modal fade" id="addCompetitorformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="#">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myCompetitorModalLabel">Add New Competitor:</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="competitorname">Competitor name: </label>
+                        <input type="text" class="form-control" name="competitorname" id="competitorname"/>
+                        <label for="website">Website: </label>
+                        <input type="text" class="form-control" name="website" id="website"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="save"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit competitor item form Modal -->
 <div class="modal fade" id="editformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -83,10 +105,34 @@
                         <input type="text" class="form-control" name="itemart" id="edititemart"/>
                         <label for="edititemname">Item name: </label>
                         <input type="text" class="form-control" name="itemname" id="edititemname"/>
-                        <label for="edititembrand">Item brand: </label>
-                        <input type="text" class="form-control" name="itembrand" id="edititembrand"/>
-                        <label for="edititemprice">Item price: </label>
-                        <input type="text" class="form-control" name="itemprice" id="edititemprice"/>
+                        <label for="editwebsite">Website: </label>
+                        <input type="text" class="form-control" name="website" id="editwebsite"/>
+                        <label for="editUrl">Url: </label>
+                        <input type="text" class="form-control" name="url" id="editUrl"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Save"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Competitor name form Modal -->
+<div class="modal fade" id="editNameformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="#">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myEditNameModalLabel">Edit Competitor</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editcompetitorname">Competitor name: </label>
+                        <input type="text" class="form-control" name="competitorname" id="editcompetitorname"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -134,6 +180,30 @@
                 <button type="button" name="delete" id="delete" class="btn btn-warning" data-dismiss="modal">Delete</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="side-panel-competitors" >
+    <div class="side-panel-competitors-center">
+        <div class="competitor-item selected-competitor" id="comp-1">
+            <div class="competitor-name">Competitor1</div>
+        </div>
+        <div class="competitor-item" id="comp-2">
+            <div class="competitor-name">Competitor2</div>
+        </div>
+    </div>
+</div>
+<div class="side-panel-tools-competitor">
+    <div class="button-tools-competitor-container">
+        <button class="add-new-competitor-btn round-btn" data-toggle="modal" data-target="#addCompetitorformModal">+</button>
+        <button class="upload-competitor-csv-btn round-btn" data-toggle="modal" data-target="#fileModal">CSV</button>
+        <button class="delete-competitor-btn round-btn"  data-toggle="modal" data-target="#deleteConfirmationModal">X</button>
+        <button class="edit-competitor-btn round-btn" data-toggle="modal" data-target="#editNameformModal">/</button>
+        <button class="upload-url round-btn" data-toggle="modal" data-target="#fileModal">^URL</button>
+        <button class="add-url round-btn" data-toggle="modal" data-target="#formModal">+URL</button>
+        <a  href="#">
+            <button class="back-to-top-competitor-btn round-btn">^</button>
+        </a>
     </div>
 </div>
 <% include common/top_panel.ejs %>

@@ -1,5 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 $(document).ready(function(){
+    $('.competitor-item').click(function(){
+        $('.side-panel-competitors-center>div.selected-competitor').removeClass("selected-competitor");
+        $(this).addClass('selected-competitor');
+    });
+
     $('#load_data').click(function(){
         var input_csv = document.getElementById('csv-file');
         var file = input_csv.files[0];
@@ -10,7 +15,6 @@ $(document).ready(function(){
             displayData(csv_data);
         }
     });
-
 });
 
 function displayData(csv_data){
@@ -46,7 +50,7 @@ function displayData(csv_data){
             table_data += '<td><button class="tool-btn round-btn-sm" >+</button>\n';
             table_data += '<button class="tool-btn round-btn-sm" >V</button>';
             table_data += '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>';
-            table_data += '<button class="tool-btn round-btn-sm">X</button></td>';
+            table_data += '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button></td>';
         }
         table_data += '</tr>';
     }

@@ -3,3 +3,9 @@ exports.homePage = function(req, res) {
         pageTitle: 'My Items'
     });
 };
+
+exports.competitorsPage = function(req, res) {
+    res.render('competitorsPage', {
+        pageTitle: 'My Competitors'
+    });
+};

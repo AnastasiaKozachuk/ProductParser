@@ -5,7 +5,7 @@ html{
   width: 100%;
 }
 
-/***************Tabs****************/
+/**********Panels,bars,tabs*********/
 .top-tabs-bar{
   position: fixed;
   top: 0;
@@ -19,6 +19,81 @@ html{
   box-shadow: 0 4px 13px -2px rgba(42, 42, 42, 0.71);
 }
 
+.side-panel-competitors{
+  padding-top: 50px;
+  position: fixed;
+  top: 0;
+  left: 70px;
+  height: 100%;
+  width: 200px;
+  background-color:  #5D5D5D;
+
+  -webkit-box-shadow: 10px 0px 4px -8px rgba(112,111,112,1);
+  -moz-box-shadow: 10px 0px 4px -8px rgba(112,111,112,1);
+  box-shadow: 10px 0px 4px -8px rgba(112,111,112,1);
+}
+.side-panel-tools-competitor{
+  padding: 5px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 80px;
+  height: 100%;
+  background-color: #a8a8a8;
+  overflow-y: auto;
+  direction: rtl;
+
+}
+.side-panel-competitors-center{
+  width: 200px;
+  height: 100%;
+  background-color: #5D5D5D;
+  overflow-y: auto;
+}
+.side-panel-competitors-buttons-bar{
+  position: fixed;
+  top: 60px;
+  left: 70px;
+  width: 150px;
+  height: 90px;
+  text-align: center;
+  padding: 15px;
+  border-bottom: 1px solid #a8a8a8;
+
+  -webkit-box-shadow: 0 4px 13px -2px rgba(42, 42, 42, 0.71);
+  -moz-box-shadow: 0 4px 13px -2px rgba(42, 42, 42, 0.71);
+  box-shadow: 0 4px 13px -2px rgba(42, 42, 42, 0.71);
+}
+
+/***************Items***************/
+.competitor-item{
+  border-bottom: 1px solid #a8a8a8;
+  width: 100%;
+  padding: 15px 15px 15px 25px;
+}
+
+.top-panel-item{
+  display: inline-block;
+  text-decoration: none;
+  color: #5D5D5D;
+  font-weight: bold;
+  padding: 15px;
+}
+.top-panel-item:hover{
+  text-decoration: none;
+  color: #F7892F;
+}
+.top-panel-item:focus{
+  text-decoration: none;
+  color: #F7892F;
+}
+.competitor-item:hover{
+  background-color: #a8a8a8;
+}
+
+.selected-competitor{
+  background-color: #a8a8a8;
+}
 /**************Containers***********/
 .container-center{
   padding-top: 50px;
@@ -30,8 +105,37 @@ html{
   width: 100%;
   padding: 30px 50px 80px 120px;
 }
-
+.competitors-table-container{
+  width: 100%;
+  padding: 30px 50px 80px 280px;
+  margin-left: 10px;
+}
+.button-tools-competitor-container{
+  width: 100%;
+  text-align: center;
+  padding-bottom: 50px;
+}
 /**************Buttons**************/
+.delete-competitor-btn{
+  background-color: #F7892F;
+  color: white;
+  margin: 5px;
+}
+.edit-competitor-btn{
+  background-color: #F7892F;
+  color: white;
+  margin: 5px;
+}
+.upload-url{
+  background-color: #F7892F;
+  color: white;
+  margin: 5px;
+}
+.add-url{
+  background-color: #F7892F;
+  color: white;
+  margin: 5px;
+}
 .round-btn{
   border-radius: 25px;
   height: 50px;
@@ -40,6 +144,9 @@ html{
   -webkit-box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
   -moz-box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
   box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
+}
+.round-btn:hover, .tool-btn:hover{
+  background-color: #c06524;
 }
 .round-btn-sm{
   border-radius: 15px;
@@ -55,12 +162,22 @@ html{
   background-color: #F7892F;
   color: white;
 }
+.tool-btn-competitor{
+  margin: 2px 2px 2px 2px;
+  background-color: #F7892F;
+  color: white;
+}
 .add-new-item-btn{
   background-color: #F7892F;
   color: white;
   position: fixed;
   top: 100px;
   left: 30px;
+}
+.add-new-competitor-btn{
+  background-color: #F7892F;
+  color: white;
+  margin: 20px 5px 5px 5px;
 }
 .back-to-top-btn{
   background-color: #F7892F;
@@ -69,6 +186,11 @@ html{
   bottom: 30px;
   left: 30px;
 }
+.back-to-top-competitor-btn{
+  background-color: #F7892F;
+  color: white;
+  margin: 50px 5px 5px 5px;
+}
 .upload-csv-btn{
   background-color: #F7892F;
   color: white;
@@ -76,7 +198,16 @@ html{
   top: 160px;
   left: 30px;
 }
-.upload-csv-btn:focus, .add-new-item-btn:focus, .back-to-top-btn:focus, .tool-btn:focus{
+.upload-competitor-csv-btn{
+  background-color: #F7892F;
+  color: white;
+  margin: 5px 5px 50px 5px;
+}
+.upload-csv-btn:focus, .add-new-item-btn:focus,
+.back-to-top-btn:focus, .tool-btn:focus,
+.upload-competitor-csv-btn:focus, .add-new-competitor-btn:focus,
+.delete-competitor-btn:focus, .edit-competitor-btn:focus,
+.add-url:focus, .upload-url:focus, .back-to-top-competitor-btn:focus{
   outline: none;
 }
 
