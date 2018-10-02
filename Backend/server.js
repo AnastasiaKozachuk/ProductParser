@@ -4,6 +4,7 @@ var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 var mongoose = require('mongoose');
+var util = require('util');
 
 function configureEndpoints(app) {
     var pages = require('./pages');
@@ -11,6 +12,12 @@ function configureEndpoints(app) {
     app.get('/', pages.homePage);
     app.get('/competitors', pages.competitorsPage);
     app.get('/item', pages.viewItemPage);
+
+    app.post('/data', function (req, res) {
+
+       console.log("Request: " + util.inspect(req.body, false, null));
+        //console.log("Request: " + req.body[0]["ID"]);
+    });
 
     app.use(express.static(path.join(__dirname, '../Frontend/www')));
     app.use(favicon(path.join(__dirname, '../Frontend/www/assets/images/favicon.ico')));
