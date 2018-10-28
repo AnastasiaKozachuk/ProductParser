@@ -12,32 +12,78 @@
                 <th>Price</th>
                 <th>Tools</th>
             </tr>
-            <!--tr>
-                <td>example id 1</td>
-                <td>example article 1</td>
-                <td>example name 1</td>
-                <td>example brand 1</td>
-                <td>example price 1</td>
-                <td><button class="tool-btn round-btn-sm" >+</button>
-                    <button class="tool-btn round-btn-sm" >V</button>
-                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>
-                    <button class="delete-item tool-btn round-btn-sm">X</button>
-                </td>
-            </tr-->
+            <% items.forEach(item => { %>
+            <tr>
+                <% if( item.active ){ %>
+                    <td><%= item.id %></td>
+                    <td><%= item.vendorCode %></td>
+                    <td><%= item.name %></td>
+                    <td><%= item.brand %></td>
+                    <td><%= item.price %></td>
+                <% } else{ %>
+                    <td style="background-color: #a8a8a8"><%= item.id %></td>
+                    <td style="background-color: #a8a8a8"><%= item.vendorCode %></td>
+                    <td style="background-color: #a8a8a8"><%= item.name %></td>
+                    <td style="background-color: #a8a8a8"><%= item.brand %></td>
+                    <td style="background-color: #a8a8a8"><%= item.price %></td>
+                <% } %>
+                <td>
+                    <div style="display: inline-block">
+                    <form method="post" action="/item">
+                        <input type="hidden" name="id" value="<%= item.id %>"/>
+                        <button data-toggle="tooltip" data-placement="top" title="View competitors" class="tool-btn round-btn-sm glyphicon glyphicon-eye-open" type="submit"></button>
+                    </form>
+                    </div>
+                    <div style="display: inline-block">
+                        <form method="post" action="/active-disable">
+                            <input type="hidden" name="id" value="<%= item.id %>"/>
+                            <input type="hidden" name="active" value="<%= item.active %>"/>
+                            <% if( item.active ){ %>
+                                <button data-toggle="tooltip" data-placement="top" title="Exclude from parsing" class="tool-btn round-btn-sm glyphicon glyphicon-ok" type="submit"></button>
+                            <% } else{ %>
+                                <button data-toggle="tooltip" data-placement="top" title="Include in parsing" class="tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle" type="submit"></button>
+                            <% } %>
+                        </form>
+                    </div>
+                    <span data-toggle="tooltip"  data-placement="top" title="Edit item" >
+                        <button class="tool-btn edit-item round-btn-sm glyphicon glyphicon-pencil" data-toggle="modal" data-target="#editformModal"
+                                data-id="<%= item.id %>"
+                                data-name="<%= item.name %>"
+                                data-brand="<%= item.brand %>"
+                                data-price="<%= item.price %>">
+                    </button>
+                    </span>
+                    <span data-toggle="tooltip"  data-placement="top" title="Delete item">
+                        <button class="delete-item tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal" data-itemid="<%= item.id %>"></button>
+                    </span>
+                    </td>
+            </tr>
+            <% }) %>
         </table>
     </div>
     <br>
     <a  href="#">
-        <button class="back-to-top-btn round-btn">^</button>
+        <button class="back-to-top-btn round-btn" data-toggle="tooltip"  data-placement="top" title="Return to top">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
     </a>
-    <button class="add-new-item-btn round-btn" data-toggle="modal" data-target="#formModal">+</button>
-    <button class="upload-csv-btn round-btn" data-toggle="modal" data-target="#fileModal">CSV</button>
+    <span class="add-new-item-btn round-btn" data-toggle="tooltip"  data-placement="top" title="Add item">
+        <button class="round-btn-orange" data-toggle="modal" data-target="#formModal">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </span>
+    <span class="upload-csv-btn round-btn" data-toggle="tooltip"  data-placement="top" title="Upload csv data">
+        <button class="round-btn-orange" data-toggle="modal" data-target="#fileModal">
+            <span class="glyphicon glyphicon-file"></span>
+        </button>
+    </span>
+
 </div>
 <!-- Add form Modal -->
 <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="#">
+            <form method="post" action="/additem">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Add New Item</h4>
@@ -45,15 +91,15 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="itemid">Item id: </label>
-                        <input type="text" class="form-control" name="itemid" id="itemid"/>
+                        <input type="text" class="form-control" name="id" id="itemid"/>
                         <label for="itemart">Item Article: </label>
-                        <input type="text" class="form-control" name="itemart" id="itemart"/>
+                        <input type="text" class="form-control" name="vendorCode" id="itemart"/>
                         <label for="itemname">Item name: </label>
-                        <input type="text" class="form-control" name="itemname" id="itemname"/>
+                        <input type="text" class="form-control" name="name" id="itemname"/>
                         <label for="itembrand">Item brand: </label>
-                        <input type="text" class="form-control" name="itembrand" id="itembrand"/>
+                        <input type="text" class="form-control" name="brand" id="itembrand"/>
                         <label for="itemprice">Item price: </label>
-                        <input type="text" class="form-control" name="itemprice" id="itemprice"/>
+                        <input type="text" class="form-control" name="price" id="itemprice"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -68,23 +114,20 @@
 <div class="modal fade" id="editformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="#">
+            <form method="post" action="/edititem">
+                <input type="hidden" id="edit-form-itemid" name="id" />
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myEditModalLabel">Edit Item</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="edititemid">Item id: </label>
-                        <input type="text" class="form-control" name="itemid" id="edititemid"/>
-                        <label for="edititemart">Item Article: </label>
-                        <input type="text" class="form-control" name="itemart" id="edititemart"/>
-                        <label for="edititemname">Item name: </label>
-                        <input type="text" class="form-control" name="itemname" id="edititemname"/>
-                        <label for="edititembrand">Item brand: </label>
-                        <input type="text" class="form-control" name="itembrand" id="edititembrand"/>
-                        <label for="edititemprice">Item price: </label>
-                        <input type="text" class="form-control" name="itemprice" id="edititemprice"/>
+                        <label for="edit-form-name">Item name: </label>
+                        <input type="text" class="form-control" name="name" id="edit-form-name"/>
+                        <label for="edit-form-brand">Item brand: </label>
+                        <input type="text" class="form-control" name="brand" id="edit-form-brand"/>
+                        <label for="edit-form-price">Item price: </label>
+                        <input type="text" class="form-control" name="price" id="edit-form-price"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -116,21 +159,25 @@
         </div>
     </div>
 </div>
+
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myDeleteLabel">Delete selected item?</h4>
-            </div>
-            <div class="modal-body">
-                <h1 class="label label-warning">This action cannot be undone!</h1>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" name="delete" id="delete" class="btn btn-warning" data-dismiss="modal">Delete</button>
-            </div>
+            <form method="post" action="/deleteitem">
+                <input type="hidden" id="delete-form-itemid" name="id" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myDeleteLabel">Delete selected item?</h4>
+                </div>
+                <div class="modal-body">
+                    <h1 class="label label-warning">This action cannot be undone!</h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Delete"/>
+                </div>
+            </form>
         </div>
     </div>
 </div>

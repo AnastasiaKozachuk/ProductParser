@@ -15,15 +15,17 @@
                 <td>example website 1</td>
                 <td>example URL 1</td>
                 <td>
-                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>
-                    <button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button>
+                    <button class="tool-btn round-btn-sm glyphicon glyphicon-pencil" data-toggle="modal" data-target="#editformModal"></button>
+                    <button class="tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal"></button>
                 </td>
             </tr>
         </table>
     </div>
     <br>
     <a  href="#">
-        <button class="back-to-top-btn round-btn">^</button>
+        <button class="back-to-top-btn round-btn">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
     </a>
 </div>
 <!-- Edit competitor form Modal -->
@@ -106,29 +108,37 @@
 <div class="side-panel-competitors" >
     <div class="side-panel-competitors-center">
         <h4 class="subtitle">Item Info:</h4>
-        <div class="item-title">ID:&nbsp
-            <span class="item-element">Example Id</span>
-        </div>
-        <div class="item-title">Article:&nbsp
-            <span class="item-element">Example Article</span>
-        </div>
-        <div class="item-title">Name:&nbsp
-            <span class="item-element">Example Name</span>
-        </div>
-        <div class="item-title">Brand:&nbsp
-            <span class="item-element">Example Brand</span>
-        </div>
-        <div class="item-title">Price:&nbsp
-            <span class="item-element">Example Price</span>
-        </div>
+        <% items.forEach(item => { %>
+            <div class="item-title">ID:&nbsp
+                <span class="item-element"><%= item.id %></span>
+            </div>
+            <div class="item-title">Article:&nbsp
+                <span class="item-element"><%= item.vendorCode %></span>
+            </div>
+            <div class="item-title">Name:&nbsp
+                <span class="item-element"><%= item.name %></span>
+            </div>
+            <div class="item-title">Brand:&nbsp
+                <span class="item-element"><%= item.brand %></span>
+            </div>
+            <div class="item-title">Price:&nbsp
+                <span class="item-element"><%= item.price %></span>
+            </div>
+        <% }) %>
     </div>
 </div>
 <div class="side-panel-tools-competitor">
     <div class="button-tools-competitor-container">
-        <button class="delete-competitor-btn round-btn"  data-toggle="modal" data-target="#deleteConfirmationModal">X</button>
-        <button class="edit-competitor-btn round-btn" data-toggle="modal" data-target="#editItemformModal">/</button>
+        <button class="delete-competitor-btn round-btn"  data-toggle="modal" data-target="#deleteConfirmationModal">
+            <span class="glyphicon glyphicon-remove"></span>
+        </button>
+        <button class="edit-competitor-btn round-btn" data-toggle="modal" data-target="#editItemformModal">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </button>
         <a href="#">
-            <button class="back-to-top-item-btn round-btn">^</button>
+            <button class="back-to-top-item-btn round-btn">
+                <span class="glyphicon glyphicon-chevron-up"></span>
+            </button>
         </a>
     </div>
 </div>

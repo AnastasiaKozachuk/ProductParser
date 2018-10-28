@@ -151,7 +151,17 @@ html{
   -moz-box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
   box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
 }
-.round-btn:hover, .tool-btn:hover{
+.round-btn-orange{
+  border-radius: 25px;
+  height: 50px;
+  width: 50px;
+  border: none;
+  background: #F7892F;
+  -webkit-box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
+  -moz-box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
+  box-shadow: -1px 5px 17px -2px rgba(66,66,66,1);
+}
+.round-btn:hover, .round-btn-orange:hover, .tool-btn:hover{
   background-color: #c06524;
 }
 .round-btn-sm{
@@ -220,8 +230,12 @@ html{
 .back-to-top-btn:focus, .tool-btn:focus, .back-to-top-item-btn:focus,
 .upload-competitor-csv-btn:focus, .add-new-competitor-btn:focus,
 .delete-competitor-btn:focus, .edit-competitor-btn:focus,
-.add-url:focus, .upload-url:focus, .back-to-top-competitor-btn:focus{
+.add-url:focus, .upload-url:focus, .back-to-top-competitor-btn:focus, .round-btn-orange:focus{
   outline: none;
+}
+
+.disabled{
+  background-color: #a8a8a8;
 }
 
 /**********Titles and Text********/
