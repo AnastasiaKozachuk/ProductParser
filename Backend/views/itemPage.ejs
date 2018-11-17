@@ -1,0 +1,185 @@
+<% include common/header.ejs %>
+<body>
+<div class="container-center">
+    <h1 class="page-name">My Items</h1>
+    <div class="items-table-container">
+        <table style="width:100%" id="employee_table">
+            <tr id="myHeader">
+                <th>Id</th>
+                <th>Article</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Tools</th>
+            </tr>
+            <% items.forEach(item => { %>
+            <tr>
+                <% if( item.active ){ %>
+                    <td><%= item.id %></td>
+                    <td><%= item.vendorCode %></td>
+                    <td><%= item.name %></td>
+                    <td><%= item.brand %></td>
+                    <td><%= item.price %></td>
+                <% } else{ %>
+                    <td style="background-color: #a8a8a8"><%= item.id %></td>
+                    <td style="background-color: #a8a8a8"><%= item.vendorCode %></td>
+                    <td style="background-color: #a8a8a8"><%= item.name %></td>
+                    <td style="background-color: #a8a8a8"><%= item.brand %></td>
+                    <td style="background-color: #a8a8a8"><%= item.price %></td>
+                <% } %>
+                <td>
+                    <div style="display: inline-block">
+                    <form method="post" action="/item">
+                        <input type="hidden" name="_id" value="<%= item._id %>"/>
+                        <button data-toggle="tooltip" data-placement="top" title="View competitors"  class="tool-btn round-btn-sm glyphicon glyphicon-eye-open withTooltip" type="submit"></button>
+                    </form>
+                    </div>
+                    <div style="display: inline-block">
+                        <form method="post" action="/active-disable">
+                            <input type="hidden" name="id" value="<%= item.id %>"/>
+                            <input type="hidden" name="active" value="<%= item.active %>"/>
+                            <% if( item.active ){ %>
+                                <button data-toggle="tooltip" data-placement="top" title="Exclude from parsing"  class="setActive tool-btn round-btn-sm glyphicon glyphicon-ok withTooltip" type="submit"></button>
+                            <% } else{ %>
+                                <button data-toggle="tooltip" data-placement="top" title="Include in parsing"  class="setActive tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle withTooltip" type="submit"></button>
+                            <% } %>
+                        </form>
+                    </div>
+                    <span data-toggle="tooltip"   data-placement="top" title="Edit item" class="withTooltip" >
+                        <button class="withTooltip tool-btn edit-item round-btn-sm glyphicon glyphicon-pencil" data-toggle="modal" data-target="#editformModal"
+                                data-id="<%= item.id %>"
+                                data-name="<%= item.name %>"
+                                data-brand="<%= item.brand %>"
+                                data-price="<%= item.price %>">
+                    </button>
+                    </span>
+                    <span data-toggle="tooltip"   data-placement="top" title="Delete item" class="withTooltip">
+                        <button class="withTooltip delete-item tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal" data-itemid="<%= item.id %>"></button>
+                    </span>
+                    </td>
+            </tr>
+            <% }) %>
+        </table>
+    </div>
+    <br>
+    <a  href="#">
+        <button class="withTooltip back-to-top-btn round-btn withTooltip"  data-toggle="tooltip"  data-placement="top" title="Return to top">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
+    </a>
+    <span class="add-new-item-btn round-btn withTooltip"  data-toggle="tooltip"  data-placement="top" title="Add item">
+        <button class="round-btn-orange withTooltip" data-toggle="modal" data-target="#formModal">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </span>
+    <span class="upload-csv-btn round-btn withTooltip"  data-toggle="tooltip"  data-placement="top" title="Upload csv data">
+        <button class="round-btn-orange withTooltip" data-toggle="modal" data-target="#fileModal">
+            <span class="glyphicon glyphicon-file"></span>
+        </button>
+    </span>
+
+</div>
+<!-- Add form Modal -->
+<div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/additem">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add New Item</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="itemid">Item id: </label>
+                        <input type="text" class="form-control" name="id" id="itemid"/>
+                        <label for="itemart">Item Article: </label>
+                        <input type="text" class="form-control" name="vendorCode" id="itemart"/>
+                        <label for="itemname">Item name: </label>
+                        <input type="text" class="form-control" name="name" id="itemname"/>
+                        <label for="itembrand">Item brand: </label>
+                        <input type="text" class="form-control" name="brand" id="itembrand"/>
+                        <label for="itemprice">Item price: </label>
+                        <input type="text" class="form-control" name="price" id="itemprice"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="save"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Edit form Modal -->
+<div class="modal fade" id="editformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/edititem">
+                <input type="hidden" id="edit-form-itemid" name="id" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myEditModalLabel">Edit Item</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-form-name">Item name: </label>
+                        <input type="text" class="form-control" name="name" id="edit-form-name"/>
+                        <label for="edit-form-brand">Item brand: </label>
+                        <input type="text" class="form-control" name="brand" id="edit-form-brand"/>
+                        <label for="edit-form-price">Item price: </label>
+                        <input type="text" class="form-control" name="price" id="edit-form-price"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Save"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- File upload form Modal -->
+<div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myfileLabel">CSV File Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="file" id="csv-file" accept=".csv"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" name="load_data_goods" id="load_data_goods" class="btn btn-warning" data-dismiss="modal">Load Data</button>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/deleteitem">
+                <input type="hidden" id="delete-form-itemid" name="id" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myDeleteLabel">Delete selected item?</h4>
+                </div>
+                <div class="modal-body">
+                    <h1 class="label label-warning">This action cannot be undone!</h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Delete"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<% include common/top_panel.ejs %>
+<% include common/footer.ejs %>

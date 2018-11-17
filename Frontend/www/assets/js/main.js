@@ -4,10 +4,22 @@ $(document).ready(function(){
     $('.competitor-item').click(function(){
         $('.side-panel-competitors-center>div.selected-competitor').removeClass("selected-competitor");
         $(this).addClass('selected-competitor');
+        let id = $(this).attr('id');
+        getUrls(id);
     });
 
     $('.delete-item').click(function (){
         $('#delete-form-itemid').val($(this).data('itemid'));
+    });
+
+    $('.setActive').hover(function(){
+        if($(this).hasClass('glyphicon-ok')){
+            $(this).removeClass('glyphicon-ok');
+            $(this).addClass('glyphicon-ban-circle');
+        }else if($(this).hasClass('glyphicon-ban-circle')){
+            $(this).removeClass('glyphicon-ban-circle');
+            $(this).addClass('glyphicon-ok');
+        }
     });
 
     $('.edit-item').on('click', function(){
@@ -18,6 +30,10 @@ $(document).ready(function(){
     });
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    $('.withTooltip').on('focus', function () {
+        $(this).blur()
+    });
 
     //load csv data about customer's goods
     //send csv data as JSON to server (server.js)
@@ -54,6 +70,44 @@ $(document).ready(function(){
     });
 });
 
+function getUrls(id){
+    const data = {
+        _id: id
+    };
+    $.post("/urls", data, function(data){
+        console.log(data);
+        display(data);
+    });
+}
+
+function display(urls){
+    let table = document.getElementById("employee_table");
+    let table_header = "<tr id=\"myHeader\">";
+    table_header += "<th>Id</th>";
+    table_header += "<th>Article</th>";
+    table_header += "<th>Name</th>";
+    table_header += "<th>URL</th>";
+    table_header += "<th>Tools</th></tr>";
+    table.innerHTML = table_header;
+    urls.forEach(url => {
+        let r = "";
+        if(url.url === ""){
+            r = "<tr class='button-glow'>";
+        }else{
+            r = "<tr>";
+        }
+        r += "<td>"+url.id+"</td>";
+        r += "<td>"+url.vendorCode+"</td>";
+        r += "<td>"+url.name+"</td>";
+        r += "<td><a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>";
+        r += "<td><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
+        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-pencil\" data-toggle=\"modal\" data-target=\"#editformModal\"></button>";
+        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-remove\" data-toggle=\"modal\" data-target=\"#deleteConfirmationModal\"></button></td></tr>";
+        table.innerHTML += r;
+    });
+
+}
+
 function csvJSON(csv){
     let csv_data=csv.split("\r\n");
     let result = [];
@@ -86,6 +140,8 @@ function sendCSVDataItem(csv_data){
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.send(csvJSON(csv_data));
 }
+
+
 
 /*
 function createToolsGoods(){

@@ -31,12 +31,12 @@ html{
   top: 0;
   left: 70px;
   height: 100%;
-  width: 200px;
+  width: 290px;
   background-color:  #5D5D5D;
 
-  -webkit-box-shadow: 10px 0px 4px -8px rgba(112,111,112,1);
-  -moz-box-shadow: 10px 0px 4px -8px rgba(112,111,112,1);
-  box-shadow: 10px 0px 4px -8px rgba(112,111,112,1);
+  -webkit-box-shadow: 10px 0 4px -8px rgba(112,111,112,1);
+  -moz-box-shadow: 10px 0 4px -8px rgba(112,111,112,1);
+  box-shadow: 10px 0 4px -8px rgba(112,111,112,1);
 }
 .side-panel-tools-competitor{
   padding: 5px;
@@ -48,10 +48,9 @@ html{
   background-color: #a8a8a8;
   overflow-y: auto;
   direction: rtl;
-
 }
 .side-panel-competitors-center{
-  width: 200px;
+  width: 290px;
   height: 100%;
   background-color: #5D5D5D;
   overflow-y: auto;
@@ -100,6 +99,18 @@ html{
 .selected-competitor{
   background-color: #a8a8a8;
 }
+/**************Effects**************/
+@keyframes glowing {
+  0% { box-shadow: 0 0 -10px #c4a300; }
+  40% { box-shadow: 0 0 20px #c4a300; }
+  60% { box-shadow: 0 0 20px #c4a300; }
+  100% { box-shadow: 0 0 -10px #c4a300; }
+}
+
+.button-glow {
+  animation: glowing 5000ms infinite;
+}
+
 /**************Containers***********/
 .container-center{
   padding-top: 50px;
@@ -107,13 +118,18 @@ html{
   height: 100%;
   background-color:  #DCC8AA;
 }
+.parser-options-container{
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
 .items-table-container{
   width: 100%;
   padding: 30px 50px 80px 120px;
 }
 .competitors-table-container{
   width: 100%;
-  padding: 30px 50px 80px 280px;
+  padding: 30px 50px 80px 365px;
   margin-left: 10px;
 }
 .button-tools-competitor-container{

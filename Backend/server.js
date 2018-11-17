@@ -9,8 +9,12 @@ let util = require('util');
 let Window = require('window');
 
 let window = new Window();
-const Competitor = require('./models/competitor-model');
-const Item = require('./models/item-model');
+const Url_Model = require('./models/urls-model');
+const Competitor_Model = require('./models/competitor-model');
+const Item_Model = require('./models/item-model');
+const Url = Url_Model.url_model;
+const Competitor = Competitor_Model.competitor_model;
+const Item = Item_Model.item_model;
 
 function isEmptyObject(obj) {
     for (let key in obj) {
@@ -34,79 +38,200 @@ function configureEndpoints(app) {
     ||||||||||||||||||||||||||| GET |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
     app.get('/',  function (req, res){
-        window.location.reload();
-        Item.find({}, function (err, docs) {
-            console.log(docs);
-            res.render('homePage', {
-                pageTitle: 'My Items',
-                items: docs
-            });
+        res.render('homePage', {
+             pageTitle: 'Welcome'
         });
     });
-    app.get('/competitors', function (req, res){
-        let docs_competitors = [];
-        let docs_items = [];
-        Competitor.find({}, function (err, docs) {
-            console.log(docs);
-            docs_competitors = docs;
-        });
-        Item.find({}, function (err, docs) {
-            console.log(docs);
-            docs_items = docs;
-        });
-        res.render('competitorsPage', {
-            pageTitle: 'My Competitors',
-            competitors: docs_competitors,
-            items: docs_items
+    app.get('/competitors',  async function (req, res){
+        //window.location.reload();
+        Competitor.find({},function(err, results){
+            res.render('competitorsPage', {
+                pageTitle: 'My Competitors',
+                competitors: results
+            });
         });
     });
     app.get('/items', function (req, res){
         window.location.reload();
         Item.find({}, function (err, docs) {
             console.log(docs);
-            res.render('homePage', {
+            res.render('itemPage', {
                 pageTitle: 'My Items',
                 items: docs
             });
         });
+    });
+    app.get('/parser', function (req, res){
+        Competitor.find({active: true}, function (err, docs) {
+            console.log(docs);
+            res.render('parserPage', {
+                pageTitle: 'My Parser',
+                competitors: docs
+            });
+        });
+    });
+    app.get('/analysis', function (req, res){
+       res.render('analysisPage', {
+           pageTitle: 'My Analysis',
+       });
     });
 
     /*-----------------------------------------------------------
     |||||||||||||||||||||||||| POST |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
 
-    app.post('/item', function (req, res){
-        Item.find({id: req.body.id}, function (err, docs) {
-            console.log(docs);
-            res.render('viewItemPage', {
-                pageTitle: 'My Item',
-                items: docs
-            });
+    app.post('/item1', async function (req, res){
+        console.log(req.body);
+        let result = await Url.find({item: req.body._id});
+        let item_info = await Item.findOne({_id: req.body._id});
+        let results = [];
+        for(let u of result){
+            let i = {};
+            i.url = u.url;
+            let competitors = await Competitor.findOne({_id: u.competitor});
+            i.comp_name = competitors.comp_name;
+            i.site = competitors.site;
+            console.log(i);
+            results.push(i);
+        }
+        res.render('viewItemPage', {
+            pageTitle: 'My Item Competitors',
+            competitors: results,
+            item: item_info
         });
     });
 
+    app.post('/item', async function (req, res){
+        let item_info = await Item.findOne({_id: req.body._id});
+        let all_competitors = await Competitor.find({});
+        let results = [];
+        for(let i of all_competitors){
+            let u = {};
+            u.comp_name = i.comp_name;
+            u.site = i.site;
 
-    app.post('/competitors/data', function (req, res){
-        console.log("Request: " + util.inspect(req.body, false, null));
-        // create
+            let urls_item = await Url.findOne({item: req.body._id, competitor: i._id});
+            if(urls_item === null || isEmptyObject(urls_item)){
+                u.url = "";
+            }else{
+                u.url = urls_item.url;
+            }
+            console.log(u);
+            results.push(u);
 
+        }
+        res.render('viewItemPage', {
+            pageTitle: 'My Item Competitors',
+            competitors: results,
+            item: item_info
+        });
+    });
 
-        //console.log("Request: " + req.body[0]["ID"]);
+    app.post('/competitors/data', async function (req, res){
+        const keys = Object.keys((req.body)[0]);
+        let my_competitors = [];
+        for(let i = 3; i<keys.length; i++) {
+            //get the site
+            const site_name = keys[i].trim();
+            if(!my_competitors.includes(site_name)){
+                my_competitors.push(site_name);
+            }
+        }
+        for(let competitor of my_competitors){
+            let result = await Competitor.findOne({site: competitor});
+            if (result === null || isEmptyObject(result)) {
+                let newCompetitor = Competitor({
+                    _id: new mongoose.Types.ObjectId(),
+                    comp_name: competitor,
+                    site: competitor
+                });
+                // save the Competitor
+                newCompetitor.save(function (err) {
+                    if (err) throw err;
+                    console.log('Competitor created!');
+                });
+            }
+        }
+
+        for(let url of req.body){
+            if (!isEmptyObject(url)) {
+                let item = await Item.findOne({id: url[keys[0]]});
+                for(let i = 3; i<keys.length; i++) {
+                    let comp = await Competitor.findOne({site: keys[i]});
+                    const comp_url = url[keys[i]];
+                    let found_url = await Url.find({url: comp_url});
+                    if(found_url === null || isEmptyObject(found_url)){
+                        let newUrl = Url({
+                            item: item._id,
+                            competitor: comp._id,
+                            url: comp_url
+                        });
+                        // save the Url
+                        newUrl.save(function (err) {
+                            if (err) throw err;
+                            console.log('Url created!');
+                        });
+                    }
+
+                }
+            }
+        }
         res.redirect('/competitors');
+    });
+
+    app.post('/url', async function (req, res){
+        console.log(req.body);
+        let result = await Url.find({competitor: req.body._id});
+        let results = [];
+        for(let u of result){
+            let i = {};
+            i.url = u.url;
+            let items = await Item.findOne({_id: u.item});
+            i.name = items.name;
+            i.id = items.id;
+            i.vendorCode = items.vendorCode;
+            console.log(i);
+            results.push(i);
+        }
+        res.send(results);
+    });
+
+    app.post('/urls', async function (req, res){
+        let all_items = await Item.find({});
+        let results = [];
+        for(let i of all_items){
+            let u = {};
+            u.id = i.id;
+            u.name = i.name;
+            u.vendorCode = i.vendorCode;
+
+            let urls_comp = await Url.findOne({competitor: req.body._id, item: i._id});
+            if(urls_comp === null || isEmptyObject(urls_comp)){
+                u.url = "";
+            }else{
+                u.url = urls_comp.url;
+            }
+            console.log(u);
+            results.push(u);
+
+        }
+        res.send(results);
     });
 
     app.post('/items/data', function (req, res){
         console.log("Request: " + util.inspect(req.body, false, null));
+        const keys = Object.keys((req.body)[0]);
         (req.body).forEach(item => {
             if(!isEmptyObject(item)){
-                Item.find({id: item["ID"]}, function (err, docs) {
+                Item.find({id: item[keys[0]]}, function (err, docs) {
                     if (!Array.isArray(docs) || !docs.length){
                         let newItem = Item({
-                            id: item["ID"],
-                            vendorCode: item["Артикул"],
-                            name: item["Назва"],
-                            brand: item["Бренд"],
-                            price: item["Ціна"]
+                            _id: new mongoose.Types.ObjectId(),
+                            id: item[keys[0]],
+                            vendorCode: item[keys[1]],
+                            name: item[keys[2]],
+                            brand: item[keys[3]],
+                            price: item[keys[4]]
                         });
                         // save the user
                         newItem.save(function(err) {
@@ -128,6 +253,7 @@ function configureEndpoints(app) {
                 Item.find({id: req.body.id}, function (err, docs) {
                     if (!Array.isArray(docs) || !docs.length){
                         let newItem = Item({
+                            _id: new mongoose.Types.ObjectId(),
                             id: req.body.id,
                             vendorCode: req.body.vendorCode,
                             name: req.body.name,

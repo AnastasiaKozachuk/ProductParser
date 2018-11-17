@@ -1,0 +1,50 @@
+<% include common/header.ejs %>
+<body>
+<div class="container-center">
+    <h1 class="page-name">Parser</h1>
+    <br/>
+    <br/>
+    <div class="parser-options-container">
+        <span data-toggle="modal" data-target="#selectCompetitorformModal">
+            <button class="tool-btn withTooltip btn btn-warning btn-lg"  data-toggle="tooltip"  data-placement="top" title="Parse one competitor">
+                <span class="glyphicon glyphicon-user"></span>
+            </button>
+        </span>
+        <button class="tool-btn withTooltip btn btn-warning btn-lg"  data-toggle="tooltip"  data-placement="top" title="Parse competitors">
+            <span class="glyphicon glyphicon-user"></span>
+            <span class="glyphicon glyphicon-user"></span>
+            <span class="glyphicon glyphicon-user"></span>
+        </button>
+
+    </div>
+</div>
+
+<!-- Select Competitor form Modal -->
+<div class="modal fade" id="selectCompetitorformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="#">
+                <input type="hidden" id="comp_name" name="comp_name"/>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myCompetitorModalLabel">Select Competitor to parse:</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                    <% competitors.forEach(competitor => { %>
+                            <input type="button" class="btn btn-default btn-block" value="<%= competitor.comp_name%>"/>
+                        <% }) %>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="parse"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<% include common/top_panel.ejs %>
+<% include common/footer.ejs %>

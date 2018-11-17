@@ -10,15 +10,21 @@
                 <th>URL</th>
                 <th>Tools</th>
             </tr>
-            <tr>
-                <td>example name 1</td>
-                <td>example website 1</td>
-                <td>example URL 1</td>
+            <% competitors.forEach(competitor => { %>
+                <% if( competitor.url === "" ){ %>
+                   <tr class='button-glow'>
+                <% } else{ %>
+                   <tr>
+                <% } %>
+                <td><%=competitor.comp_name%></td>
+                <td><%=competitor.site%></td>
+                <td><a href="<%=competitor.url%>" target="_blank"><%=competitor.url%></a></td>
                 <td>
                     <button class="tool-btn round-btn-sm glyphicon glyphicon-pencil" data-toggle="modal" data-target="#editformModal"></button>
                     <button class="tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal"></button>
                 </td>
             </tr>
+            <% }) %>
         </table>
     </div>
     <br>
@@ -108,7 +114,6 @@
 <div class="side-panel-competitors" >
     <div class="side-panel-competitors-center">
         <h4 class="subtitle">Item Info:</h4>
-        <% items.forEach(item => { %>
             <div class="item-title">ID:&nbsp
                 <span class="item-element"><%= item.id %></span>
             </div>
@@ -124,7 +129,6 @@
             <div class="item-title">Price:&nbsp
                 <span class="item-element"><%= item.price %></span>
             </div>
-        <% }) %>
     </div>
 </div>
 <div class="side-panel-tools-competitor">

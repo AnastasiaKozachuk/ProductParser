@@ -11,19 +11,6 @@
                 <th>URL</th>
                 <th>Tools</th>
             </tr>
-            <% competitors.forEach(competitor => { %>
-            <tr>
-                <td>id</td>
-                <td>code</td>
-                <td>name</td>
-                <td><%=competitor.url%></td>
-                <td>
-                    <button class="tool-btn round-btn-sm glyphicon glyphicon-ok" ></button>
-                    <button class="tool-btn round-btn-sm glyphicon glyphicon-pencil" data-toggle="modal" data-target="#editformModal"></button>
-                    <button class="tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal"></button>
-                </td>
-            </tr>
-            <% }) %>
         </table>
     </div>
     <br>
@@ -185,12 +172,9 @@
 
 <div class="side-panel-competitors" >
     <div class="side-panel-competitors-center">
-        <div class="competitor-item selected-competitor" id="comp-1">
-            <div class="competitor-name">Competitor1</div>
-        </div>
         <% competitors.forEach(competitor => { %>
-        <div class="competitor-item" id="comp-2">
-            <div class="competitor-name"><%=competitor.site%></div>
+        <div class="competitor-item" id=<%=competitor._id%>>
+            <div class="competitor-name"><%=competitor.comp_name%></div>
         </div>
         <% }) %>
     </div>
