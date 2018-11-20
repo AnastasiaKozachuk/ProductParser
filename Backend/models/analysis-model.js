@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 let AnalysisSchema = new Schema({
      _id: {type: Schema.Types.ObjectId},
-	url: {type: Schema.Types.ObjectId, ref: Item.url_model},
+	url: {type: Schema.Types.ObjectId, ref: Url.url_model},
     price: {type: String, required: false, trim: true},
     data: {type: String, required: false, trim: true}
 });

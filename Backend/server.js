@@ -12,9 +12,11 @@ let window = new Window();
 const Url_Model = require('./models/urls-model');
 const Competitor_Model = require('./models/competitor-model');
 const Item_Model = require('./models/item-model');
+const Analysis_Model = require('./models/analysis-model');
 const Url = Url_Model.url_model;
 const Competitor = Competitor_Model.competitor_model;
 const Item = Item_Model.item_model;
+const Analysis = Analysis_Model.analysis_model;
 
 function isEmptyObject(obj) {
     for (let key in obj) {
@@ -215,6 +217,64 @@ function configureEndpoints(app) {
             results.push(u);
 
         }
+        res.send(results);
+    });
+	
+	//Analysis load
+	
+	app.post('/analysis/show', async function (req, res){
+		let all_analysis_data = await Analysis.find({});
+        let results = [];
+        for(let i of all_analysis_data){
+            let u = {};
+
+            let url_comp = await Url.findOne({_id: i.url});
+            if(url_comp === null || isEmptyObject(urls_comp)){
+                u.url = "";
+            }else{
+                u.url = url_comp.url;
+            }
+			
+			let site = "";
+			let comp = await Competitor.findOne({_id: url_comp.competitor});
+			if(item === null || isEmptyObject(item)){
+                site = "";
+            }else{
+                site = comp.site;
+            }
+			u[site] = {}
+            u.comp.price = i.price;
+            u.comp.data = i.data;
+			
+			let item = await Item.findOne({_id: url_comp.item});
+            if(item === null || isEmptyObject(item)){
+                u.id = "";
+				u.defprice = "";
+            }else{
+                u.id = item.id;
+				u.defprice = item.price;
+            }
+
+            console.log(u);
+            results.push(u);
+
+        }
+		let result2 = [];
+		let id_pres = []
+		result.forEach(a => {
+			var o = a;
+			id_pres.push(a.id);
+			for( let i = 2; i<result.length; i++){ 
+					if ( id_pres.includes(result[i].id)) {
+						let comp = result[i].comp;
+						let site = result[i].site;
+						result.splice(i, 1); 
+						a[site] = comp;
+					}
+			}
+			result2.push(a);
+		});
+		
         res.send(results);
     });
 
