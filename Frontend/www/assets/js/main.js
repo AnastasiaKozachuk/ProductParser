@@ -22,6 +22,10 @@ $(document).ready(function(){
         }
     });
 
+    $('.parse-comp').click(function (){
+        $('#_id').val($(this).attr('id'));
+    });
+
     $('.edit-item').on('click', function(){
         $('#edit-form-name').val($(this).data('name'));
         $('#edit-form-brand').val($(this).data('brand'));
