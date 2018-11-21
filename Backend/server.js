@@ -223,28 +223,35 @@ function configureEndpoints(app) {
 	//Analysis load
 	
 	app.post('/analysis/show', async function (req, res){
+	
+		
 		let all_analysis_data = await Analysis.find({});
-        let results = [];
+		console.log(all_analysis_data);
+        let result = [];
         for(let i of all_analysis_data){
             let u = {};
-
+			console.log(i.url);
+			
+			
             let url_comp = await Url.findOne({_id: i.url});
-            if(url_comp === null || isEmptyObject(urls_comp)){
+            if(url_comp === null || isEmptyObject(url_comp)){
                 u.url = "";
             }else{
                 u.url = url_comp.url;
+				console.log(url_comp);
             }
 			
 			let site = "";
 			let comp = await Competitor.findOne({_id: url_comp.competitor});
-			if(item === null || isEmptyObject(item)){
+			if(comp === null || isEmptyObject(comp)){
                 site = "";
             }else{
                 site = comp.site;
+				console.log(comp);
             }
 			u[site] = {}
-            u.comp.price = i.price;
-            u.comp.data = i.data;
+            u[site].price = i.price;
+            u[site].data = i.data;
 			
 			let item = await Item.findOne({_id: url_comp.item});
             if(item === null || isEmptyObject(item)){
@@ -252,11 +259,12 @@ function configureEndpoints(app) {
 				u.defprice = "";
             }else{
                 u.id = item.id;
+				u.name = item.name;
 				u.defprice = item.price;
             }
 
             console.log(u);
-            results.push(u);
+            result.push(u);
 
         }
 		let result2 = [];
@@ -275,7 +283,7 @@ function configureEndpoints(app) {
 			result2.push(a);
 		});
 		
-        res.send(results);
+        res.send(result2);
     });
 
     app.post('/items/data', function (req, res){
