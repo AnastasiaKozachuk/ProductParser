@@ -13,6 +13,8 @@ html{
   text-align: center;
 }
 .top-tabs-bar{
+  display: flex;
+  justify-content: space-between;
   position: fixed;
   top: 0;
   left: 0;
@@ -254,6 +256,14 @@ html{
   background-color: #a8a8a8;
 }
 
+.disabled-hover{
+  background-color: #a8a8a8;
+}
+
+.disabled-hover:hover{
+  background-color: #a8a8a8 !important;
+}
+
 /**********Titles and Text********/
 .page-name{
   text-align: center;
@@ -276,6 +286,10 @@ html{
 .item-title{
   padding: 15px 8px 8px 25px;
   color: #F7892F;
+}
+.comp-title{
+  padding: 15px 8px 8px 25px;
+  color: #DCC8AA;
 }
 
 .item-element{
@@ -304,4 +318,14 @@ th{
   text-align: center !important;
   color: white;
   background-color: #5D5D5D;
+}
+
+.analysis-td{
+  color: #5D5D5D !important;
+  background-color: white !important;
+}
+
+.analysis-snd-header{
+  background-color: #797979 !important;
+  color: white !important;
 }

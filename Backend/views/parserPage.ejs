@@ -24,7 +24,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="post" action="#">
-                <input type="hidden" id="comp_name" name="comp_name"/>
+                <input type="hidden" id="_id" name="_id"/>
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myCompetitorModalLabel">Select Competitor to parse:</h4>
@@ -32,7 +32,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                     <% competitors.forEach(competitor => { %>
-                            <input type="button" class="btn btn-default btn-block" value="<%= competitor.comp_name%>"/>
+                            <input type="button" class="btn btn-default btn-block parse-comp" id="<%= competitor._id%>" value="<%= competitor.comp_name%>"/>
                         <% }) %>
                     </div>
                 </div>
