@@ -1,5 +1,13 @@
 $(document).ready(function(){
 
+    // enable tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // hide tooltip on focus
+    $('.withTooltip').on('focus', function () {
+        $(this).blur()
+    });
+
     // set selected competitor active
     $('.competitor-item').click(function(){
         $('.side-panel-competitors-center>div.selected-competitor').removeClass("selected-competitor");
@@ -8,10 +16,8 @@ $(document).ready(function(){
         getUrls(id);
     });
 
-    $('.delete-item').click(function (){
-        $('#delete-form-itemid').val($(this).data('itemid'));
-    });
 
+    // change active/disabled item icon on hover
     $('.setActive').hover(function(){
         if($(this).hasClass('glyphicon-ok')){
             $(this).removeClass('glyphicon-ok');
@@ -22,6 +28,28 @@ $(document).ready(function(){
         }
     });
 
+    // set id of competitor to be parsed
+    $('.parse-comp').click(function (){
+        $('#_id').val($(this).attr('id'));
+    });
+
+    // set id of item to be deleted
+    $('.delete-item').click(function (){
+        $('#delete-form-itemid').val($(this).data('itemid'));
+    });
+
+    // set id of competitor to be deleted
+    $('.delete-competitor-btn').click(function (){
+        $('#delete-form-site').val($('.side-panel-competitors-center>div.selected-competitor').attr('id'));
+    });
+
+    // set edit competitor input fields values
+    $('.edit-competitor-btn').click(function(){
+        $('#editcompetitorname').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-name').text());
+        $('#editcompetitorsite').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-site').text());
+    });
+
+    // set edit item input fields values
     $('.edit-item').on('click', function(){
         $('#edit-form-name').val($(this).data('name'));
         $('#edit-form-brand').val($(this).data('brand'));
@@ -29,85 +57,38 @@ $(document).ready(function(){
         $('#edit-form-itemid').val($(this).data('id'));
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
-
-    $('.withTooltip').on('focus', function () {
-        $(this).blur()
-    });
-
-    //load csv data about customer's goods
-    //send csv data as JSON to server (server.js)
-    // display csv data in html table
-
     $('#load_data_goods').click(function(){
-        let input_csv = document.getElementById('csv-file');
-        let file = input_csv.files[0];
-        let reader = new FileReader();
-        reader.readAsText(file, "UTF-8");
-        reader.onload = function (evt) {
-            let csv_data1 = evt.target.result;
-            sendCSVDataItem(csv_data1);
-            //let csv_data = csv_data1.split(/\r?\n|\r/);
-            //displayDataGoods(csv_data);
-        }
+        let url = "/items/data";
+        readCSVFile(url);
     });
-
-    //load csv data about customer's competitors
-    //send csv data as JSON to server (server.js)
-    // display csv data in html table
 
     $('#load_data_competitors').click(function(){
-        let input_csv = document.getElementById('csv-file');
-        let file = input_csv.files[0];
-        let reader = new FileReader();
-        reader.readAsText(file, "UTF-8");
-        reader.onload = function (evt) {
-            let csv_data1 = evt.target.result;
-            sendCSVDataComp(csv_data1);
-            //let csv_data = csv_data1.split(/\r?\n|\r/);
-            //displayDataCompetitors(csv_data);
-        }
+        let url = "/competitors/data";
+        readCSVFile(url);
     });
 });
 
-function getUrls(id){
-    const data = {
-        _id: id
-    };
-    $.post("/urls", data, function(data){
-        console.log(data);
-        display(data);
-    });
+// load csv data
+function readCSVFile(url){
+    let input_csv = document.getElementById('csv-file');
+    let file = input_csv.files[0];
+    let reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function (evt) {
+        let csv_data = evt.target.result;
+        sendCSVData(csv_data, url);
+    }
 }
 
-function display(urls){
-    let table = document.getElementById("employee_table");
-    let table_header = "<tr id=\"myHeader\">";
-    table_header += "<th>Id</th>";
-    table_header += "<th>Article</th>";
-    table_header += "<th>Name</th>";
-    table_header += "<th>URL</th>";
-    table_header += "<th>Tools</th></tr>";
-    table.innerHTML = table_header;
-    urls.forEach(url => {
-        let r = "";
-        if(url.url === ""){
-            r = "<tr class='button-glow'>";
-        }else{
-            r = "<tr>";
-        }
-        r += "<td>"+url.id+"</td>";
-        r += "<td>"+url.vendorCode+"</td>";
-        r += "<td>"+url.name+"</td>";
-        r += "<td><a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>";
-        r += "<td><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
-        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-pencil\" data-toggle=\"modal\" data-target=\"#editformModal\"></button>";
-        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-remove\" data-toggle=\"modal\" data-target=\"#deleteConfirmationModal\"></button></td></tr>";
-        table.innerHTML += r;
-    });
-
+// send csv data as JSON to server (server.js)
+function sendCSVData(csv_data, url){
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.open('POST', url);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.send(csvJSON(csv_data));
 }
 
+// parse csv to JSON
 function csvJSON(csv){
     let csv_data=csv.split("\r\n");
     let result = [];
@@ -125,111 +106,99 @@ function csvJSON(csv){
     return JSON.stringify(result);
 }
 
-
-function sendCSVDataComp(csv_data){
-    let xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/competitors/data');
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
-    console.log(csvJSON(csv_data));
-    xmlhttp.send(csvJSON(csv_data));
+// get urls of competitor
+function getUrls(id){
+    const data = {
+        _id: id
+    };
+    $.post("/urls", data, function(data){
+        console.log(data);
+        displayUrls(data);
+    });
 }
 
-function sendCSVDataItem(csv_data){
-    let xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/items/data');
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.send(csvJSON(csv_data));
+// display urls of competitor in html table
+function displayUrls(urls){
+    let table = document.getElementById("employee_table");
+    table.innerHTML = getUrlTableHeader();
+    urls.forEach(url => {
+        let r = "<tr>";
+        if(!url.active_item) {
+            r += "<td style=\"background-color: #a8a8a8\">"+url.id+"</td>";
+            r += "<td style=\"background-color: #a8a8a8\">"+url.vendorCode+"</td>";
+            r += "<td style=\"background-color: #a8a8a8\">"+url.name+"</td>";
+            r += "<td style=\"background-color: #a8a8a8\"><a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>";
+        }else if(!url.active){
+            r += "<td style=\"background-color: #a8a8a8\">"+url.id+"</td>";
+            r += "<td style=\"background-color: #a8a8a8\">"+url.vendorCode+"</td>";
+            r += "<td style=\"background-color: #a8a8a8\">"+url.name+"</td>";
+            r += "<td style=\"background-color: #a8a8a8\"><a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>";
+        }else{
+            r += "<td>" + url.id + "</td>";
+            r += "<td>" + url.vendorCode + "</td>";
+            r += "<td>" + url.name + "</td>";
+            r += "<td><a href='" + url.url + "' target='_blank'>" + url.url + "</a></td>";
+        }
+        if(!url.active_item){
+            r += "<td><button class=\"tool-btn round-btn-sm disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
+        }else if(!url.active){
+            r += "<td><button class=\"tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle\" ></button>";
+        }else{
+            r += "<td><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
+        }
+        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-pencil\" data-toggle=\"modal\" data-target=\"#editformModal\"></button>";
+        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-remove\" data-toggle=\"modal\" data-target=\"#deleteConfirmationModal\"></button></td></tr>";
+
+        table.innerHTML += r;
+    });
+
 }
 
+function getUrlTableHeader(){
+    let table_header = "<tr id=\"myHeader\">";
+    table_header += "<th>Id</th>";
+    table_header += "<th>Article</th>";
+    table_header += "<th>Name</th>";
+    table_header += "<th>URL</th>";
+    table_header += "<th>Tools</th></tr>";
+    return table_header;
+}
 
+function getATableHeader(num_competitors, info){
+    let table_header = "<tr id=\"myHeader\">";
+    table_header += "<th colspan='3'>Items</th>";
+    info.forEach(date =>{
+        table_header += "<th colspan='"+num_competitors+"'>"+date.date+"</th>";
+    });
+    table_header += "</tr>";
+    return table_header;
+}
 
-/*
-function createToolsGoods(){
-    let button_tool1 = '<a href="/item"><button class="tool-btn round-btn-sm" >+</button></a>';
-    let button_tool2 = '<button class="tool-btn round-btn-sm" >V</button>';
-    let button_tool3 = '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>';
-    let button_tool4 = '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button>';
-    return '<td>' + button_tool1 + button_tool2 + button_tool3 + button_tool4 + '</td>';
+function getATableSubHeader(info){
+    let subHeader = "<tr>";
+    subHeader += "<th class=\"analysis-snd-header\">ID</th>";
+    subHeader += "<th class=\"analysis-snd-header\">Name</th>";
+    subHeader += "<th class=\"analysis-snd-header\">Your Price</th>";
+    info.forEach(comp => {
+        subHeader += "<th class='analysis-snd-header'>"+comp+"</th>";
+    });
+    subHeader += "</tr>";
+    return subHeader;
 }
-function createToolsCompetitors(){
-    let button_tool1 = '<button class="tool-btn round-btn-sm" >V</button>';
-    let button_tool2 = '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#editformModal">/</button>';
-    let button_tool3 = '<button class="tool-btn round-btn-sm" data-toggle="modal" data-target="#deleteConfirmationModal">X</button>';
-    return '<td>' + button_tool1 + button_tool2 + button_tool3 + '</td>';
+
+function displayAnalysis(info){
+    let table = document.getElementById("employee_table");
+    table.innerHTML = getATableHeader(info[0].date.length, info);
+    table.innerHTML += getATableSubHeader(info[0].date);
+    let data = "<tr>";
+    info.forEach(i => {
+        data += "<td>"+i.id+"</td>";
+        data += "<td>"+i.name+"</td>";
+        data += "<td>"+i.price+"</td>";
+        i.date.forEach(price => {
+            data += "<td>"+price.comp_price+"</td>";
+        });
+    });
+    data += "</tr>";
+    table.innerHTML += data;
 }
-function displayDataGoods(csv_data){
-    let table_data = '';
-    let wasHeader = false;
-    let wasData = false;
-    for(let count = 0; count<csv_data.length; count++)
-    {
-        let cell_data = csv_data[count].split(";");
-        table_data += '<tr>';
-        for(let cell_count=0; cell_count<cell_data.length; cell_count++)
-        {
-            if(count === 0)
-            {
-                if(cell_data[cell_count] !== "") {
-                    table_data += '<th>' + cell_data[cell_count] + '</th>';
-                    wasHeader = true;
-                    wasData = false;
-                }
-                wasData = false;
-            }
-            else
-            {
-                if(cell_data[cell_count] !== "") {
-                    table_data += '<td>' + cell_data[cell_count] + '</td>';
-                    wasData = true;
-                }
-                wasHeader = false;
-            }
-        }
-        if(wasHeader){
-            table_data += '<th>Інструменти</th>';
-        }
-        if(wasData && (count !== (csv_data.length-1))){
-            table_data += createToolsGoods();
-        }
-        table_data += '</tr>';
-    }
-    $('#employee_table').append(table_data);
-}
-function displayDataCompetitors(csv_data){
-    let table_data = '';
-    let wasHeader = false;
-    let wasData = false;
-    for(let count = 0; count<csv_data.length; count++)
-    {
-        let cell_data = csv_data[count].split(";");
-        table_data += '<tr>';
-        for(let cell_count=0; cell_count<cell_data.length; cell_count++)
-        {
-            if(count === 0)
-            {
-                if(cell_data[cell_count] !== "") {
-                    table_data += '<th>' + cell_data[cell_count] + '</th>';
-                    wasHeader = true;
-                    wasData = false;
-                }
-                wasData = false;
-            }
-            else
-            {
-                if(cell_data[cell_count] !== "") {
-                    table_data += '<td>' + cell_data[cell_count] + '</td>';
-                    wasData = true;
-                }
-                wasHeader = false;
-            }
-        }
-        if(wasHeader){
-            table_data += '<th>Інструменти</th>';
-        }
-        if(wasData && (count !== (csv_data.length-1))){
-            table_data += createToolsCompetitors();
-        }
-        table_data += '</tr>';
-    }
-    $('#employee_table').append(table_data);
-}*/
