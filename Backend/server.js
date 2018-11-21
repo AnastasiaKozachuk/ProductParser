@@ -329,7 +329,6 @@ function configureEndpoints(app) {
 
             for (var i in docs) {
                 console.log(parseUrl(docs[i].url));
-                sleep(2)
             }
 
             res.send("Ok");
@@ -341,40 +340,34 @@ function configureEndpoints(app) {
 
     });
 
-    function sleep(seconds){
-        var waitUntil = new Date().getTime() + seconds*100;
-        while(new Date().getTime() < waitUntil) true;
-    }
 
-    async function parseUrl(url) {
+    function parseUrl(url, delay) {
 
-        var correctUrl = url.includes("http:") ? url.replace("http", "https") : url;
+            var correctUrl = url.url.includes("http:") ? url.url.replace("http", "https") : url.url;
 
-        if (url.includes("officeman.ua")) {
-            return await officeman.parse(correctUrl);
-        } else if (url.includes("a-techno.com")) {
-            return await aTechno.parse(correctUrl);
-        } else if (url.includes("nobu.com.ua")) {
-            return await nobu.parse(correctUrl);
-        } else if (url.includes("mobilluck.com")) {
-            return await mobilluk.parse(correctUrl);
-        }
+            if (url.url.includes("officeman.ua")) {
+                 officeman.parse(correctUrl, url);
+            } else if (url.url.includes("a-techno.com")) {
+                aTechno.parse(correctUrl, url);
+            } else if (url.url.includes("nobu.com.ua")) {
+                nobu.parse(correctUrl, url);
+            } else if (url.url.includes("mobilluck.com")) {
+                mobilluk.parse(correctUrl, url);
+            }
 
     }
 
-    app.post('/parseAllCompetitors', async function (req, res) {
+
+    app.post('/parseAllCompetitors', function (req, res) {
 
         Url.find({}, function (err, docs) {
             if (err) throw err;
 
+            let promises = [];
+
             for (var i in docs) {
-
-                var price =  parseUrl(docs[i].url);
-                console.log(price)
-                sleep(2)
+                parseUrl(docs[i]);
             }
-
-            res.send("Ok");
 
         });
 
