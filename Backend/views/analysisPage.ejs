@@ -2,14 +2,10 @@
 <body>
 <div class="container-center">
     <div class="items-table-container">
-
         <h1 class="page-name">Analysis of Parsing</h1>
         <br/>
         <br/>
-        <div class="filters">
-
-        </div>
-        <br/>
+        <button class="open-filter-modal btn btn-block submit-button">Filter</button>
         <br/>
         <table style="width:100%" id="employee_table">
         <tr>
@@ -53,6 +49,61 @@
         </button>
     </a>
 
+</div>
+
+<div class="modal-filter disp-none">
+    <div class="modal-filter-background"></div>
+    <div class="modal-filter__main-section">
+        <div class="modal-filter__main-section-item noborder-left">
+            <h3 class="modal-filter__main-section-h">By date:</h3>
+            <div class="modal-filter-from-to-text">From</div>
+            <input class="modal-filter__main-section-input" type="date" name="dateFrom">
+            <input class="modal-filter__main-section-input" type="time" name="dateFrom">
+            <div class="modal-filter-from-to-text">Till</div>
+            <input class="modal-filter__main-section-input" type="date" name="dateTill">
+            <input class="modal-filter__main-section-input" type="time" name="dateFrom">
+            <button class="btn submit-button disp-none" type="button">Sort</button>
+        </div>
+        <div class="modal-filter__main-section-item modal-filter-average-section ">
+            <h3 class="modal-filter__main-section-h">By price:</h3>
+            <div class="modal-filter-choose-item">Any</div>
+            <div class="modal-filter-choose-item">Less than our</div>
+            <div class="modal-filter-choose-item">More than our</div>
+            <div class="modal-filter-choose-item">More or same as our</div>
+            <div class="modal-filter-choose-item">Less or same as our</div>
+            <button class="btn submit-button disp-none" type="button">Sort</button>
+        </div>
+        <div class="modal-filter__main-section-item">
+            <h3 class="modal-filter__main-section-h">By brand:</h3>
+            <div class="modal-filter-select-all">Select all brands</div>
+            <div class="modal-filter-text-or">Or enter name of brand: </div>
+            <div class="form-group input">
+                <label for="sel1">Select list:</label>
+                <select class="form-control" id="sel1">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                </select>
+            </div>
+            <button class="btn submit-button disp-none" type="button">Sort</button>
+        </div>
+        <div class="modal-filter__main-section-item">
+            <h3 class="modal-filter__main-section-h">By competitors:</h3>
+            <div class="modal-filter-select-all">Select all competitors</div>
+            <div class="modal-filter-text-or">Or enter link of competitor: </div>
+            <div class="form-group input">
+                <label for="sel1">Select list:</label>
+                <select class="form-control" id="sel1">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                </select>
+            </div>
+            <button class="btn submit-button disp-none" type="button">Sort</button>
+        </div>
+    </div>
 </div>
 
 <% include common/top_panel.ejs %>

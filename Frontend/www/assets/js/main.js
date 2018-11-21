@@ -66,6 +66,31 @@ $(document).ready(function(){
         let url = "/competitors/data";
         readCSVFile(url);
     });
+
+    /*filter modal window*/
+    $(".open-filter-modal").click(function () {
+        $(".modal-filter").removeClass("disp-none");
+    });
+
+    $(".modal-filter-background").click(function () {
+        $(".modal-filter").addClass("disp-none");
+        $(".modal-filter-choose-item").removeClass("link-active");
+        $(".modal-filter-select-all").removeClass("link-active");
+    });
+
+    let prev = $(".link-active");
+    $(".modal-filter-choose-item").click(function () {
+        prev.removeClass("link-active");
+        $(this).addClass("link-active");
+        prev=$(this);
+    });
+
+    $(".modal-filter-select-all").click(function () {
+        prev.removeClass("link-active");
+        $(this).addClass("link-active");
+        prev=$(this);
+    });
+
 });
 
 // load csv data
