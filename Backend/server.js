@@ -223,23 +223,14 @@ function configureEndpoints(app) {
 	//Analysis load
 	
 	app.post('/analysis/show', async function (req, res){
-	
 		
 		let all_analysis_data = await Analysis.find({});
 		console.log(all_analysis_data);
         let result = [];
         for(let i of all_analysis_data){
             let u = {};
-			console.log(i.url);
-			
-			
+
             let url_comp = await Url.findOne({_id: i.url});
-            if(url_comp === null || isEmptyObject(url_comp)){
-                u.url = "";
-            }else{
-                u.url = url_comp.url;
-				console.log(url_comp);
-            }
 			
 			let site = "";
 			let comp = await Competitor.findOne({_id: url_comp.competitor});
@@ -249,9 +240,6 @@ function configureEndpoints(app) {
                 site = comp.site;
 				console.log(comp);
             }
-			u[site] = {}
-            u[site].price = i.price;
-            u[site].data = i.data;
 			
 			let item = await Item.findOne({_id: url_comp.item});
             if(item === null || isEmptyObject(item)){
@@ -263,25 +251,42 @@ function configureEndpoints(app) {
 				u.defprice = item.price;
             }
 
-            console.log(u);
+			u.data = i.data
+			u.site = site;
+			u[i.data] = {};
+            u[i.data][site] = i.price;
+			
             result.push(u);
 
         }
+		console.log("START!!!");
 		let result2 = [];
-		let id_pres = []
-		result.forEach(a => {
-			var o = a;
-			id_pres.push(a.id);
-			for( let i = 2; i<result.length; i++){ 
-					if ( id_pres.includes(result[i].id)) {
-						let comp = result[i].comp;
-						let site = result[i].site;
-						result.splice(i, 1); 
-						a[site] = comp;
+		let cur_id = "";
+		let leng = result.length;
+		while(leng>0){ 
+			var o = result[0];
+			curr_id = o.id;
+			result.splice(0,1);
+			let i = 0;
+			while( i<result.length){ 
+					if ( curr_id == result[i].id) {
+						if(o.data == result[i].data){
+							console.log(result[i][o.data][result[i].site]);
+							o[o.data][result[i].site]=result[i][o.data][result[i].site];
+						} else {
+							o[result[i].data] = {}
+							o[result[i].data][result[i].site]=result[i][result[i].data][result[i].site];
+						}
+						result.splice(i, 1); 					
+					} else {
+						i++;
 					}
 			}
-			result2.push(a);
-		});
+			o.data = undefined;
+			o.site = undefined;
+			result2.push(o);
+			leng = result.length;
+		}
 		
         res.send(result2);
     });
