@@ -44,21 +44,21 @@ function configureEndpoints(app) {
     /*-----------------------------------------------------------
     ||||||||||||||||||||||||||| GET |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
-    app.get('/',  function (req, res){
+    app.get('/', function (req, res) {
         res.render('homePage', {
-             pageTitle: 'Welcome'
+            pageTitle: 'Welcome'
         });
     });
-    app.get('/competitors',  async function (req, res){
+    app.get('/competitors', async function (req, res) {
         //window.location.reload();
-        Competitor.find({},function(err, results){
+        Competitor.find({}, function (err, results) {
             res.render('competitorsPage', {
                 pageTitle: 'My Competitors',
                 competitors: results
             });
         });
     });
-    app.get('/items', function (req, res){
+    app.get('/items', function (req, res) {
         window.location.reload();
         Item.find({}, function (err, docs) {
             console.log(docs);
@@ -68,8 +68,8 @@ function configureEndpoints(app) {
             });
         });
     });
-    app.get('/parser', function (req, res){
-        Competitor.find({active: true}, function (err, docs) {
+    app.get('/parser', function (req, res) {
+        Competitor.find({ active: true }, function (err, docs) {
             console.log(docs);
             res.render('parserPage', {
                 pageTitle: 'My Parser',
@@ -77,36 +77,36 @@ function configureEndpoints(app) {
             });
         });
     });
-    app.get('/analysis', async function (req, res){
+    app.get('/analysis', async function (req, res) {
         let competitors = await Competitor.find({});
-        let items_brands = await Item.find({},['brand']);
+        let items_brands = await Item.find({}, ['brand']);
         let brands = new Set();
-        for(let brand of items_brands){
+        for (let brand of items_brands) {
             brands.add(brand.brand);
         }
-       res.render('analysisPage', {
-           pageTitle: 'My Analysis',
-           competitors: competitors,
-           brands: brands
-       });
+        res.render('analysisPage', {
+            pageTitle: 'My Analysis',
+            competitors: competitors,
+            brands: brands
+        });
     });
 
     /*-----------------------------------------------------------
     |||||||||||||||||||||||||| POST |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
-    app.post('/item', async function (req, res){
-        let item_info = await Item.findOne({_id: req.body._id});
+    app.post('/item', async function (req, res) {
+        let item_info = await Item.findOne({ _id: req.body._id });
         let all_competitors = await Competitor.find({});
         let results = [];
-        for(let i of all_competitors){
+        for (let i of all_competitors) {
             let u = {};
             u.comp_name = i.comp_name;
             u.site = i.site;
 
-            let urls_item = await Url.findOne({item: req.body._id, competitor: i._id});
-            if(urls_item === null || isEmptyObject(urls_item)){
+            let urls_item = await Url.findOne({ item: req.body._id, competitor: i._id });
+            if (urls_item === null || isEmptyObject(urls_item)) {
                 u.url = "";
-            }else{
+            } else {
                 u.url = urls_item.url;
             }
             console.log(u);
@@ -120,18 +120,18 @@ function configureEndpoints(app) {
         });
     });
 
-    app.post('/competitors/data', async function (req, res){
+    app.post('/competitors/data', async function (req, res) {
         const keys = Object.keys((req.body)[0]);
         let my_competitors = [];
-        for(let i = 3; i<keys.length; i++) {
+        for (let i = 3; i < keys.length; i++) {
             //get the site
             const site_name = keys[i].trim();
-            if(!my_competitors.includes(site_name)){
+            if (!my_competitors.includes(site_name)) {
                 my_competitors.push(site_name);
             }
         }
-        for(let competitor of my_competitors){
-            let result = await Competitor.findOne({site: competitor});
+        for (let competitor of my_competitors) {
+            let result = await Competitor.findOne({ site: competitor });
             if (result === null || isEmptyObject(result)) {
                 let newCompetitor = Competitor({
                     _id: new mongoose.Types.ObjectId(),
@@ -146,14 +146,14 @@ function configureEndpoints(app) {
             }
         }
 
-        for(let url of req.body){
+        for (let url of req.body) {
             if (!isEmptyObject(url)) {
-                let item = await Item.findOne({id: url[keys[0]]});
-                for(let i = 3; i<keys.length; i++) {
-                    let comp = await Competitor.findOne({site: keys[i]});
+                let item = await Item.findOne({ id: url[keys[0]] });
+                for (let i = 3; i < keys.length; i++) {
+                    let comp = await Competitor.findOne({ site: keys[i] });
                     const comp_url = url[keys[i]];
-                    let found_url = await Url.find({url: comp_url});
-                    if(found_url === null || isEmptyObject(found_url)){
+                    let found_url = await Url.find({ url: comp_url });
+                    if (found_url === null || isEmptyObject(found_url)) {
                         let newUrl = Url({
                             item: item._id,
                             competitor: comp._id,
@@ -173,91 +173,160 @@ function configureEndpoints(app) {
         res.redirect('/competitors');
     });
 
-    //Analysis load
-
-    app.post('/analysis/show', async function (req, res){
+    app.post('/analysis/show', async function (req, res) {
+        let param = {};
+        param.priceEq = "all"; // sign of operation or any other string to show all
+        param.site = "www.mobilluck.com.ua"; // direct url or "all" as parameter to show all
+        param.brand = "Agent"; // name of brand or "all" as parameter to show all
+        param.dataFrom = "10-1-2018 00:00:00";
+        param.dataTo = "10-10-2019 00:00:00";
 
         let all_analysis_data = await Analysis.find({});
         console.log(all_analysis_data);
         let result = [];
-        for(let i of all_analysis_data){
+
+        for (let analysisObject of all_analysis_data) {
             let u = {};
-
-            let url_comp = await Url.findOne({_id: i.url});
-
+            let url_competitor = await Url.findOne({ _id: analysisObject.url });
             let site = "";
-            let comp = await Competitor.findOne({_id: url_comp.competitor});
-            if(comp === null || isEmptyObject(comp)){
+
+            let comp = await Competitor.findOne({ _id: url_competitor.competitor });
+            if (comp === null || isEmptyObject(comp)) {
                 site = "";
-            }else{
+            } else {
                 site = comp.site;
-                console.log(comp);
             }
 
-            let item = await Item.findOne({_id: url_comp.item});
-            if(item === null || isEmptyObject(item)){
+            let item = await Item.findOne({ _id: url_competitor.item });
+            if (item === null || isEmptyObject(item)) {
                 u.id = "";
                 u.defprice = "";
-            }else{
+            } else {
                 u.id = item.id;
                 u.name = item.name;
+                u.brand = item.brand;
                 u.defprice = item.price;
             }
 
-            u.data = i.data;
+            u.data = analysisObject.data;
             u.site = site;
-            u[i.data] = {};
-            u[i.data][site] = i.price;
+            u[analysisObject.data] = {};
+            u[analysisObject.data][site] = analysisObject.price;
 
             result.push(u);
 
         }
-        console.log("START!!!");
-        let result2 = [];
-        let curr_id = "";
-        let leng = result.length;
-        while(leng>0){
-            let o = result[0];
-            curr_id = o.id;
-            result.splice(0,1);
-            let i = 0;
-            while( i<result.length){
-                if ( curr_id === result[i].id) {
-                    if(o.data === result[i].data){
-                        console.log(result[i][o.data][result[i].site]);
-                        o[o.data][result[i].site]=result[i][o.data][result[i].site];
-                    } else {
-                        o[result[i].data] = {};
-                        o[result[i].data][result[i].site]=result[i][result[i].data][result[i].site];
-                    }
-                    result.splice(i, 1);
-                } else {
-                    i++;
-                }
-            }
-            o.data = undefined;
-            o.site = undefined;
-            result2.push(o);
-            leng = result.length;
-        }
-
-        res.send(result2);
+        res.send(dataFormat(result, param));
     });
 
-    app.post('/urls', async function (req, res){
+    function dataFormat(analysisData, parameters) {
+        let formatArray = [];
+        let curr_id = "";
+        let analysisDataLength = analysisData.length;
+        while (analysisDataLength > 0) {
+            let analysisObject = analysisData[0];
+            if (parametersMatching(analysisObject, parameters)) {
+                curr_id = analysisObject.id;
+                analysisData.splice(0, 1);
+                let i = 0;
+                while (i < analysisData.length) {
+                    if (parametersMatching(analysisData[i], parameters)) {
+                        let aData = analysisData[i].data;
+                        let aSite = analysisData[i].site;
+                        if (curr_id === analysisData[i].id) {
+                            if (analysisObject.data === aData) {
+                                analysisObject[aData][aSite] = analysisData[i][aData][aSite];
+                            } else {
+                                analysisObject[aData] = {};
+                                analysisObject[aData][aSite] = analysisData[i][aData][aSite];
+                            }
+                            analysisData.splice(i, 1);
+                        } else {
+                            i++;
+                        }
+                    } else {
+                        analysisData.splice(i, 1);
+                    }
+                }
+                analysisObject.data = undefined;
+                analysisObject.site = undefined;
+                analysisObject.brand = undefined;
+                formatArray.push(analysisObject);
+            } else {
+                analysisData.splice(0, 1);
+            }
+            analysisDataLength = analysisData.length;
+
+        }
+        return formatArray;
+    }
+
+    function parametersMatching(object, parameters) {
+        console.log(object);
+        let priceMatch = false;
+        switch (parameters.priceEq) {
+            case ">": {
+                if (parseInt(object[object.data][object.site], 10) > parseInt(object.defprice, 10)) {
+                    priceMatch = true;
+                }
+                break;
+            }
+            case "<": {
+                if (parseInt(object[object.data][object.site], 10) < parseInt(object.defprice, 10)) {
+                    priceMatch = true;
+                }
+                break;
+            }
+            case ">=": {
+                if (parseInt(object[object.data][object.site], 10) >= parseInt(object.defprice, 10)) {
+                    priceMatch = true;
+                }
+                break;
+            }
+            case "<=": {
+                if (parseInt(object[object.data][object.site], 10) <= parseInt(object.defprice, 10)) {
+                    priceMatch = true;
+                }
+                break;
+            }
+            default : {
+                priceMatch = true;
+            }
+        }
+        let siteMatch = false;
+        if(parameters.site == "all") {
+            siteMatch = true;
+        } else {
+        if(object.site == parameters.site){
+            siteMatch = true;
+        } 
+        }
+        let brandMatch = false;
+        if(parameters.brand == "all") {
+            brandMatch = true;
+        } else {
+        if(object.brand == parameters.brand){
+            brandMatch = true;
+        } 
+        }
+        return (priceMatch&&siteMatch&&brandMatch);
+    }
+
+
+    app.post('/urls', async function (req, res) {
         let all_items = await Item.find({});
         let results = [];
-        for(let i of all_items){
+        for (let i of all_items) {
             let u = {};
             u.id = i.id;
             u.name = i.name;
             u.vendorCode = i.vendorCode;
 
-            let urls_comp = await Url.findOne({competitor: req.body._id, item: i._id});
-            if(urls_comp === null || isEmptyObject(urls_comp)){
+            let urls_comp = await Url.findOne({ competitor: req.body._id, item: i._id });
+            if (urls_comp === null || isEmptyObject(urls_comp)) {
                 u.url = "";
                 u.active = i.active;
-            }else{
+            } else {
                 u.url = urls_comp.url;
                 u.active = urls_comp.active;
             }
@@ -269,13 +338,13 @@ function configureEndpoints(app) {
         res.send(results);
     });
 
-    app.post('/items/data', function (req, res){
+    app.post('/items/data', function (req, res) {
         console.log("Request: " + util.inspect(req.body, false, null));
         const keys = Object.keys((req.body)[0]);
         (req.body).forEach(item => {
-            if(!isEmptyObject(item)){
-                Item.find({id: item[keys[0]]}, function (err, docs) {
-                    if (!Array.isArray(docs) || !docs.length){
+            if (!isEmptyObject(item)) {
+                Item.find({ id: item[keys[0]] }, function (err, docs) {
+                    if (!Array.isArray(docs) || !docs.length) {
                         let newItem = Item({
                             _id: new mongoose.Types.ObjectId(),
                             id: item[keys[0]],
@@ -285,7 +354,7 @@ function configureEndpoints(app) {
                             price: item[keys[4]]
                         });
                         // save the user
-                        newItem.save(function(err) {
+                        newItem.save(function (err) {
                             if (err) throw err;
                             console.log('Item created!');
                         });
@@ -296,42 +365,42 @@ function configureEndpoints(app) {
         res.redirect('/items');
     });
 
-    app.post('/additem', function (req, res){
+    app.post('/additem', function (req, res) {
         console.log("/item/create SUCCESS");
-            if(req.body.id !== "" || req.body.id !== undefined){
-                Item.find({id: req.body.id}, function (err, docs) {
-                    if (!Array.isArray(docs) || !docs.length){
-                        let newItem = Item({
-                            _id: new mongoose.Types.ObjectId(),
-                            id: req.body.id,
-                            vendorCode: req.body.vendorCode,
-                            name: req.body.name,
-                            brand: req.body.brand,
-                            price: req.body.price
-                        });
-                        // save the user
-                        newItem.save(function(err) {
-                            if (err) throw err;
-                            console.log('Item created!');
-                        });
-                    }
-                });
-            }
+        if (req.body.id !== "" || req.body.id !== undefined) {
+            Item.find({ id: req.body.id }, function (err, docs) {
+                if (!Array.isArray(docs) || !docs.length) {
+                    let newItem = Item({
+                        _id: new mongoose.Types.ObjectId(),
+                        id: req.body.id,
+                        vendorCode: req.body.vendorCode,
+                        name: req.body.name,
+                        brand: req.body.brand,
+                        price: req.body.price
+                    });
+                    // save the user
+                    newItem.save(function (err) {
+                        if (err) throw err;
+                        console.log('Item created!');
+                    });
+                }
+            });
+        }
         res.redirect('/items');
     });
 
-    app.post('/addcompetitor', function (req, res){
+    app.post('/addcompetitor', function (req, res) {
         console.log("/competitor/create SUCCESS");
-        if(req.body.site !== "" || req.body.site !== undefined){
-            Competitor.find({site: req.body.site}, function (err, docs) {
-                if (!Array.isArray(docs) || !docs.length){
+        if (req.body.site !== "" || req.body.site !== undefined) {
+            Competitor.find({ site: req.body.site }, function (err, docs) {
+                if (!Array.isArray(docs) || !docs.length) {
                     let newCompetitor = Competitor({
                         _id: new mongoose.Types.ObjectId(),
-                        comp_name: (req.body.comp_name !== "" || req.body.comp_name !== undefined)?req.body.comp_name:req.body.site,
+                        comp_name: (req.body.comp_name !== "" || req.body.comp_name !== undefined) ? req.body.comp_name : req.body.site,
                         site: req.body.site
                     });
                     // save the user
-                    newCompetitor.save(function(err) {
+                    newCompetitor.save(function (err) {
                         if (err) throw err;
                         console.log('Competitor created!');
                     });
@@ -341,17 +410,18 @@ function configureEndpoints(app) {
         res.redirect('/competitors');
     });
 
-    app.post('/edititem', function (req, res){
+    app.post('/edititem', function (req, res) {
         console.log(req.body.id);
         Item.updateOne(
-            { id: req.body.id},
-            { $set:
+            { id: req.body.id },
+            {
+                $set:
                 {
                     name: req.body.name,
                     brand: req.body.brand,
                     price: req.body.price
                 }
-            }, function(err, res) {
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -360,15 +430,16 @@ function configureEndpoints(app) {
         res.redirect('/items');
     });
 
-    app.post('/editUrlItem', function (req, res){
+    app.post('/editUrlItem', function (req, res) {
         console.log(req.body.id);
         Url.updateOne(
-            { url: req.body.url},
-            { $set:
-                    {
-                        url: req.body.url
-                    }
-            }, function(err, res) {
+            { url: req.body.url },
+            {
+                $set:
+                {
+                    url: req.body.url
+                }
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -377,15 +448,16 @@ function configureEndpoints(app) {
         res.redirect('/item, req.body.id');
     });
 
-    app.post('/editUrlCompetitor', function (req, res){
+    app.post('/editUrlCompetitor', function (req, res) {
         console.log(req.body.url);
         Url.updateOne(
-            { url: req.body.url},
-            { $set:
-                    {
-                        url: req.body.url
-                    }
-            }, function(err, res) {
+            { url: req.body.url },
+            {
+                $set:
+                {
+                    url: req.body.url
+                }
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -394,16 +466,17 @@ function configureEndpoints(app) {
         res.redirect('/competitors');
     });
 
-    app.post('/editcompetitor', function (req, res){
+    app.post('/editcompetitor', function (req, res) {
         console.log(req.body.site);
         Competitor.updateOne(
-            { site: req.body.site},
-            { $set:
-                    {
-                        comp_name: req.body.comp_name,
-                        site: req.body.site
-                    }
-            }, function(err, res) {
+            { site: req.body.site },
+            {
+                $set:
+                {
+                    comp_name: req.body.comp_name,
+                    site: req.body.site
+                }
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -412,16 +485,17 @@ function configureEndpoints(app) {
         res.redirect('/competitors');
     });
 
-    app.post('/active-disable', function (req, res){
+    app.post('/active-disable', function (req, res) {
         let value_bool = (req.body.active !== 'true');
 
         Item.updateOne(
-            { id: req.body.id},
-            { $set:
-                    {
-                        active: value_bool
-                    }
-            }, function(err, res) {
+            { id: req.body.id },
+            {
+                $set:
+                {
+                    active: value_bool
+                }
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -430,16 +504,17 @@ function configureEndpoints(app) {
         res.redirect('/items');
     });
 
-    app.post('/active-disable-url', function (req, res){
+    app.post('/active-disable-url', function (req, res) {
         let value_bool = (req.body.active !== 'true');
 
         Url.updateOne(
-            { url: req.body.url},
-            { $set:
-                    {
-                        active: value_bool
-                    }
-            }, function(err, res) {
+            { url: req.body.url },
+            {
+                $set:
+                {
+                    active: value_bool
+                }
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -448,16 +523,17 @@ function configureEndpoints(app) {
         res.redirect('/competitors');
     });
 
-    app.post('/active-disable-competitor', function (req, res){
+    app.post('/active-disable-competitor', function (req, res) {
         let value_bool = (req.body.active !== 'true');
 
         Competitor.updateOne(
-            { site: req.body.site},
-            { $set:
-                    {
-                        active: value_bool
-                    }
-            }, function(err, res) {
+            { site: req.body.site },
+            {
+                $set:
+                {
+                    active: value_bool
+                }
+            }, function (err, res) {
                 if (err) throw err;
                 console.log("1 document updated");
                 console.log(res);
@@ -468,7 +544,7 @@ function configureEndpoints(app) {
 
     app.post('/parseOneCompetitor', function (req, res) {
 
-        Url.find({competitor: req.body._id, active:true}, function (err, docs) {
+        Url.find({ competitor: req.body._id, active: true }, function (err, docs) {
             if (err) throw err;
 
             for (var i in docs) {
@@ -502,7 +578,7 @@ function configureEndpoints(app) {
 
     app.post('/parseAllCompetitors', function (req, res) {
 
-        Url.find({active: true}, function (err, docs) {
+        Url.find({ active: true }, function (err, docs) {
             if (err) throw err;
 
             for (var i in docs) {
@@ -518,41 +594,41 @@ function configureEndpoints(app) {
     /*-----------------------------------------------------------
     |||||||||||||||||||||||| DELETE |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
-    app.delete('/deleteAllComp', function (req, res){
-        Competitor.deleteMany({}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    res.redirect('/competitors');
-                }
+    app.delete('/deleteAllComp', function (req, res) {
+        Competitor.deleteMany({}, function (err) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('success');
+                res.redirect('/competitors');
             }
+        }
         );
     });
 
-    app.post('/deleteitem', function (req, res){
-        Item.deleteOne({id: req.body.id}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    res.redirect('/items');
-                }
+    app.post('/deleteitem', function (req, res) {
+        Item.deleteOne({ id: req.body.id }, function (err) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('success');
+                res.redirect('/items');
             }
+        }
         );
     });
 
-    app.post('/deletecompetitor', function (req, res){
-        Url.deleteMany({competitor: req.body._id}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    //res.redirect('/competitors');
-                }
+    app.post('/deletecompetitor', function (req, res) {
+        Url.deleteMany({ competitor: req.body._id }, function (err) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('success');
+                //res.redirect('/competitors');
             }
+        }
         );
-        Competitor.deleteOne({_id: req.body._id}, function(err) {
+        Competitor.deleteOne({ _id: req.body._id }, function (err) {
             if (err) {
                 console.log(err)
             } else {
@@ -562,22 +638,22 @@ function configureEndpoints(app) {
         });
     });
 
-    app.delete('/deleteAllItems', function (req, res){
-        Item.deleteMany({}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    res.redirect('/items');
-                }
+    app.delete('/deleteAllItems', function (req, res) {
+        Item.deleteMany({}, function (err) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('success');
+                res.redirect('/items');
             }
+        }
         );
     });
 }
 
 function startServer(port) {
 
-    mongoose.connect('mongodb://localhost/Companies', {useNewUrlParser: true}).then(
+    mongoose.connect('mongodb://localhost/Companies', { useNewUrlParser: true }).then(
         () => {
             console.log("Connected to DB!");
         },
@@ -609,7 +685,7 @@ function startServer(port) {
     configureEndpoints(app);
 
     app.listen(port, function () {
-        console.log('My Application Running on http://localhost:'+port+'/');
+        console.log('My Application Running on http://localhost:' + port + '/');
     });
 }
 
