@@ -16,6 +16,7 @@ exports.parse =function (url, urlObject) {
                 if (!err) {
                     const $ = cheerio.load(body, {decodeEntities: false});
                     var price = $('meta[itemprop=price]').attr("content");
+                    price = price.replace(/ /g, '');
                     console.log(url);
 
                     var date = new Date;

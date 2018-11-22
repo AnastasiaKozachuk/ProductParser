@@ -14,6 +14,7 @@ exports.parse = function (url, urlObject) {
             if (!err) {
                 const $ = cheerio.load(body, {decodeEntities: false});
                 var price = $('div[class=buy_block] span[class=cost]').text();
+                price = price.replace(/ /g, '');
                 console.log(url);
                 resPrice = price;
 

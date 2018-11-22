@@ -12,6 +12,7 @@ exports.parse =  function (url, urlObject){
                 if (!err) {
                     const $ = cheerio.load(body, {decodeEntities: false});
                     var price = $('span[id=price]').text().match("(.*)грн.")[1].trim();
+                    price = price.replace(/ /g, '');
                     console.log(url);
 
                     var date = new Date;
