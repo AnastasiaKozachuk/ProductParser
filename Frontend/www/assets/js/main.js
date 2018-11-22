@@ -251,10 +251,10 @@ function displayAnalysis(info){
                         data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
                     }
                     else if(Object.keys(i[d]).includes(c)){
-                        if(i[d][c] > i.defprice){
+                        if(Number((i[d][c]).replace(/\s/g, '')) > Number((i.defprice).replace(/\s/g, ''))){
                             data += "<td style='background-color: #a5d57d; border-color: white'>"+i[d][c]+"</td>";
                         }
-                        else if(i[d][c] < i.defprice){
+                        else if(Number((i[d][c]).replace(/\s/g, '')) < Number((i.defprice).replace(/\s/g, ''))){
                             data += "<td style='background-color: #ff8d55; border-color: white'>"+i[d][c]+"</td>";
                         }
                         else{
