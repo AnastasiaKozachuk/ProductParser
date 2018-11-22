@@ -174,12 +174,17 @@ function configureEndpoints(app) {
     });
 
     app.post('/analysis/show', async function (req, res) {
+
         let param = {};
         param.priceEq = req.body.byPrice; // sign of operation or any other string to show all
+        console.log(req.body.byPrice);
         param.site = req.body.byComp; // direct url or "all" as parameter to show all
+        console.log(req.body.byComp);
         param.brand = req.body.byBrand; // name of brand or "all" as parameter to show all
         param.dataFrom = req.body.dateFrom;
+        console.log(req.body.dateFrom);
         param.dataTo = req.body.dateTill;
+        console.log(req.body.dateTill);
 
         let all_analysis_data = await Analysis.find({});
         console.log(all_analysis_data);

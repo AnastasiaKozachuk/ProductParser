@@ -74,7 +74,7 @@ $(document).ready(function(){
         table.innerHTML = "";
         $(".loading-msg").show();
 
-        getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').attr('value'),$('#timeFrom').attr('value'),$('#dateTill').attr('value'), $('#timeTill').attr('value'));
+        getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').val(),$('#timeFrom').val(),$('#dateTill').val(), $('#timeTill').val());
     });
 
     //filter modal window
@@ -168,25 +168,42 @@ function getUrls(id){
 
 function getAnalysis(price, brand, comp, datef, timef, datet, timet){
     let url = "/analysis/show";
+    console.log(datef + " " + timef + " " + datet + " " + timet);
     const data = {
         byPrice: (price)?price:"any",
         byBrand: (brand)?brand:"all",
         byComp: (comp)?comp:"all",
-        dateFrom: (datef && timef)?toDateTime(datef, timef):"any",
-        dateTill: (datet && timet)?toDateTime(datet, timet):"any"
+        dateFrom: (datef !== undefined && timef !== undefined)?toDateTime(datef, timef):"all",
+        dateTill: (datet !== undefined && timet !== undefined)?toDateTime(datet, timet):"all"
     };
-
+    console.log(data.byPrice);
+    console.log(data.byBrand);
+    console.log(data.byComp);
+    console.log(data.dateFrom);
+    console.log(data.dateTill);
     $.post(url, data, function(data){
         console.log(data);
         displayAnalysis(data);
     });
 }
 
+let timepicker = new TimePicker('time', {
+    lang: 'en',
+    theme: 'dark'
+});
+timepicker.on('change', function(evt) {
+
+    let value = (evt.hour || '00') + ':' + (evt.minute || '00');
+    evt.element.value = value;
+
+});
+
 function toDateTime(date, time){
-    return (date + " " + to24time(time));
+    let dt = to24time(("24", time.trim()));
+    return (date.trim() + " " + dt);
 }
 
-function to24time(time){
+function to24time(format, time){
     let hours = Number(time.match(/^(\d+)/)[1]);
     let minutes = Number(time.match(/:(\d+)/)[1]);
     let AMPM = time.match(/\s(.*)$/)[1];
@@ -196,7 +213,7 @@ function to24time(time){
     let sMinutes = minutes.toString();
     if(hours<10) sHours = "0" + sHours;
     if(minutes<10) sMinutes = "0" + sMinutes;
-    alert(sHours + ":" + sMinutes + ":00");
+    return sHours + ":" + sMinutes + ":00";
 }
 
 // display urls of competitor in html table
