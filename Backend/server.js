@@ -180,7 +180,7 @@ function configureEndpoints(app) {
         param.brand = req.body.byBrand; // name of brand or "all" as parameter to show all
         param.dataFrom = req.body.dateFrom;
         param.dataTo = req.body.dateTill;
-
+        console.log(param);
         let all_analysis_data = await Analysis.find({});
         console.log(all_analysis_data);
         let result = [];
@@ -295,29 +295,78 @@ function configureEndpoints(app) {
                 }
                 break;
             }
-            default : {
+            default: {
                 priceMatch = true;
             }
         }
         let siteMatch = false;
-        if(parameters.site == "all") {
+        if (parameters.site === "all") {
             siteMatch = true;
         } else {
-        if(object.site == parameters.site){
-            siteMatch = true;
-        } 
+            if (object.site == parameters.site) {
+                siteMatch = true;
+            }
         }
         let brandMatch = false;
-        if(parameters.brand == "all") {
+        if (parameters.brand == "all") {
             brandMatch = true;
         } else {
-        if(object.brand == parameters.brand){
-            brandMatch = true;
-        } 
+            if (object.brand == parameters.brand) {
+                brandMatch = true;
+            }
         }
-        return (priceMatch&&siteMatch&&brandMatch);
+        return (priceMatch && siteMatch && brandMatch && dateMatchFrom(object.data, parameters.dataFrom) && dateMatchTo(object.data, parameters.dataTo));
     }
 
+    function dateMatchFrom(date, dateFrom) {
+        if (dateFrom == "all") {
+            return true;
+        }
+        let dateParseFrom = dateFrom.split(" ")[0];
+        let dateParse = date.split(" ")[0];
+        dateParse = dateParse.split("-")[1] + "-" + dateParse.split("-")[0] + "-" + dateParse.split("-")[2];
+        dateParseFrom = dateParseFrom.split("-")[1] + "-" + dateParseFrom.split("-")[0] + "-" + dateParseFrom.split("-")[2];
+        for (let i = 2; i >= 0; i--) {
+            if (parseInt(dateParse.split("-")[i], 10) > parseInt(dateParseFrom.split("-")[i], 10)) return true;
+            if (parseInt(dateParse.split("-")[i], 10) < parseInt(dateParseFrom.split("-")[i], 10)) {
+                return false;
+            }
+        }
+        let timeParseFrom = dateFrom.split(" ")[1];
+        let timeParse = date.split(" ")[1];
+        for (let i = 1; i >= 0; i--) {
+            if (parseInt(timeParse.split(":")[i], 10) > parseInt(timeParseFrom.split(":")[i], 10)) return true;
+            if (parseInt(timeParse.split(":")[i], 10) < parseInt(timeParseFrom.split(":")[i], 10)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function dateMatchTo(date, dateTo) {
+        if (dateTo == "all") {
+            return true;
+        }
+        let dateParseTo = dateTo.split(" ")[0];
+        let dateParse = date.split(" ")[0];
+        dateParse = dateParse.split("-")[1] + "-" + dateParse.split("-")[0] + "-" + dateParse.split("-")[2];
+        dateParseTo = dateParseTo.split("-")[1] + "-" + dateParseTo.split("-")[0] + "-" + dateParseTo.split("-")[2];
+        for (let i = 2; i >= 0; i--) {
+            if (parseInt(dateParse.split("-")[i], 10) < parseInt(dateParseTo.split("-")[i], 10)) return true;
+            if (parseInt(dateParse.split("-")[i], 10) > parseInt(dateParseTo.split("-")[i], 10)) {
+                return false;
+            }
+        }
+        let timeParseTo = dateTo.split(" ")[1];
+        let timeParse = date.split(" ")[1];
+        for (let i = 1; i >= 0; i--) {
+            if (parseInt(timeParse.split(":")[i], 10) < parseInt(timeParseTo.split(":")[i], 10)) return true;
+            if (parseInt(timeParse.split(":")[i], 10) > parseInt(timeParseTo.split(":")[i], 10)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     app.post('/urls', async function (req, res) {
         let all_items = await Item.find({});

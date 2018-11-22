@@ -172,8 +172,8 @@ function getAnalysis(price, brand, comp, datef, timef, datet, timet){
         byPrice: (price)?price:"any",
         byBrand: (brand)?brand:"all",
         byComp: (comp)?comp:"all",
-        dateFrom: (datef && timef)?toDateTime(datef, timef):"any",
-        dateTill: (datet && timet)?toDateTime(datet, timet):"any"
+        dateFrom: (datef && timef)?toDateTime(datef, timef):"all",
+        dateTill: (datet && timet)?toDateTime(datet, timet):"all"
     };
 
     $.post(url, data, function(data){
