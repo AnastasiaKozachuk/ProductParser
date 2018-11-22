@@ -29,8 +29,9 @@ $(document).ready(function(){
     });
 
     // set id of competitor to be parsed
-    $('.parse-comp').click(function (){
-        $('#_id').val($(this).attr('id'));
+    $('.parseOneCompBtn').click(function (){
+        $('#IDparseOne').attr('value', ($(this).attr('id')));
+        console.log( $('#IDparseOne').attr('value'));
     });
 
     // set id of item to be deleted
@@ -67,18 +68,17 @@ $(document).ready(function(){
         readCSVFile(url);
     });
 
-    /*filter modal window*/
-    $(".open-filter-modal").click(function () {
-        $(".modal-filter").removeClass("disp-none");
+    //show analysis
+    $(".submit-button").click(function(){
+        let table = document.getElementById("employee_table");
+        table.innerHTML = "";
+        $(".loading-msg").show();
+        getAnalysis();
     });
 
-    $(".modal-filter-background").click(function () {
-        $(".modal-filter").addClass("disp-none");
-        $(".modal-filter-choose-item").removeClass("link-active");
-        $(".modal-filter-select-all").removeClass("link-active");
-    });
+//filter modal window
 
-    let prev = $(".link-active");
+    var prev = $(".link-active");
     $(".modal-filter-choose-item").click(function () {
         prev.removeClass("link-active");
         $(this).addClass("link-active");
@@ -142,6 +142,14 @@ function getUrls(id){
     });
 }
 
+function getAnalysis(){
+    let url = "/analysis/show";
+    $.post(url, function(data){
+        console.log(data);
+        displayAnalysis(data);
+    });
+}
+
 // display urls of competitor in html table
 function displayUrls(urls){
     let table = document.getElementById("employee_table");
@@ -165,11 +173,11 @@ function displayUrls(urls){
             r += "<td><a href='" + url.url + "' target='_blank'>" + url.url + "</a></td>";
         }
         if(!url.active_item){
-            r += "<td><button class=\"tool-btn round-btn-sm disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
         }else if(!url.active){
-            r += "<td><button class=\"tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle\" ></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle\" ></button>";
         }else{
-            r += "<td><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
         }
         r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-pencil\" data-toggle=\"modal\" data-target=\"#editformModal\"></button>";
         r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-remove\" data-toggle=\"modal\" data-target=\"#deleteConfirmationModal\"></button></td></tr>";
@@ -193,37 +201,90 @@ function getATableHeader(num_competitors, info){
     let table_header = "<tr id=\"myHeader\">";
     table_header += "<th colspan='3'>Items</th>";
     info.forEach(date =>{
-        table_header += "<th colspan='"+num_competitors+"'>"+date.date+"</th>";
+        table_header += "<th colspan='"+num_competitors+"'>"+date+"</th>";
     });
     table_header += "</tr>";
     return table_header;
 }
 
-function getATableSubHeader(info){
+function getATableSubHeader(info, dates){
     let subHeader = "<tr>";
     subHeader += "<th class=\"analysis-snd-header\">ID</th>";
     subHeader += "<th class=\"analysis-snd-header\">Name</th>";
     subHeader += "<th class=\"analysis-snd-header\">Your Price</th>";
-    info.forEach(comp => {
-        subHeader += "<th class='analysis-snd-header'>"+comp+"</th>";
-    });
+    for(let i = 0; i < dates.size; i++){
+        info.forEach(comp => {
+            subHeader += "<th class='analysis-snd-header'>"+comp+"</th>";
+        });
+    }
     subHeader += "</tr>";
     return subHeader;
 }
 
 function displayAnalysis(info){
     let table = document.getElementById("employee_table");
-    table.innerHTML = getATableHeader(info[0].date.length, info);
-    table.innerHTML += getATableSubHeader(info[0].date);
-    let data = "<tr>";
+    let dates = new Set([]);
+    let competitors = [];
+    for(let o of info){
+        const keys = Object.keys(o);
+        for(let k of keys){
+            if(k ==="id" || k ==="name" || k ==="defprice"){}
+            else{
+                dates.add(k);
+                competitors = competitors.concat(Object.keys(o[k]));
+            }
+        }
+    }
+    const comp_set = new Set(competitors);
+    console.log(comp_set);
+    table.innerHTML = getATableHeader(comp_set.size, dates);
+    table.innerHTML += getATableSubHeader(comp_set, dates);
+    let data = "";
     info.forEach(i => {
-        data += "<td>"+i.id+"</td>";
-        data += "<td>"+i.name+"</td>";
-        data += "<td>"+i.price+"</td>";
-        i.date.forEach(price => {
-            data += "<td>"+price.comp_price+"</td>";
-        });
+        data += "<tr> <td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+i.id+"</td>";
+        data += "<td  style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+i.name+"</td>";
+        data += "<td  style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+i.defprice+"</td>";
+        for(let d of dates){
+            if(i.hasOwnProperty(d)){
+                for(let c of comp_set){
+                    if(Object.keys(i[d]).includes(c) && i[d][c] === ""){
+                        data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
+                    }
+                    else if(Object.keys(i[d]).includes(c)){
+                        if(i[d][c] > i.defprice){
+                            data += "<td style='background-color: #a5d57d; border-color: white'>"+i[d][c]+"</td>";
+                        }
+                        else if(i[d][c] < i.defprice){
+                            data += "<td style='background-color: #ff8d55; border-color: white'>"+i[d][c]+"</td>";
+                        }
+                        else{
+                            data += "<td style='background-color: #feffb4; border-color: white'>"+i[d][c]+"</td>";
+                        }
+
+                    }
+                    else{
+                        data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
+                    }
+                }
+            }
+            else{
+                for(let c of comp_set){
+                    data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
+                }
+            }
+        }
+        data += "<td style='visibility: hidden'>End Of Table Row</td>";
+        data += "</tr>";
     });
-    data += "</tr>";
+    $(".loading-msg").hide();
     table.innerHTML += data;
+}
+
+function isEmptyObject(obj) {
+    for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            return false;
+        }
+    }
+    return true;
 }

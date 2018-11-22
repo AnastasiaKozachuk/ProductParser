@@ -10,11 +10,18 @@ let Window = require('window');
 const Url_Model = require('./models/urls-model');
 const Competitor_Model = require('./models/competitor-model');
 const Item_Model = require('./models/item-model');
+const Analysis_Model = require('./models/analysis-model');
+
+let aTechno = require('./Parsers/a-techno/ATechnoParser');
+let mobilluk = require('./Parsers/mobilluk/MobillukParser');
+let officeman = require('./Parsers/officeman/OfficemanParser');
+let nobu = require('./Parsers/nobu/NobuParser');
 
 let window = new Window();
 const Url = Url_Model.url_model;
 const Competitor = Competitor_Model.competitor_model;
 const Item = Item_Model.item_model;
+const Analysis = Analysis_Model.analysis_model;
 
 function isEmptyObject(obj) {
     for (let key in obj) {
@@ -70,9 +77,17 @@ function configureEndpoints(app) {
             });
         });
     });
-    app.get('/analysis', function (req, res){
+    app.get('/analysis', async function (req, res){
+        let competitors = await Competitor.find({});
+        let items_brands = await Item.find({},['brand']);
+        let brands = new Set();
+        for(let brand of items_brands){
+            brands.add(brand.brand);
+        }
        res.render('analysisPage', {
            pageTitle: 'My Analysis',
+           competitors: competitors,
+           brands: brands
        });
     });
 
@@ -156,6 +171,77 @@ function configureEndpoints(app) {
             }
         }
         res.redirect('/competitors');
+    });
+
+    //Analysis load
+
+    app.post('/analysis/show', async function (req, res){
+
+        let all_analysis_data = await Analysis.find({});
+        console.log(all_analysis_data);
+        let result = [];
+        for(let i of all_analysis_data){
+            let u = {};
+
+            let url_comp = await Url.findOne({_id: i.url});
+
+            let site = "";
+            let comp = await Competitor.findOne({_id: url_comp.competitor});
+            if(comp === null || isEmptyObject(comp)){
+                site = "";
+            }else{
+                site = comp.site;
+                console.log(comp);
+            }
+
+            let item = await Item.findOne({_id: url_comp.item});
+            if(item === null || isEmptyObject(item)){
+                u.id = "";
+                u.defprice = "";
+            }else{
+                u.id = item.id;
+                u.name = item.name;
+                u.defprice = item.price;
+            }
+
+            u.data = i.data;
+            u.site = site;
+            u[i.data] = {};
+            u[i.data][site] = i.price;
+
+            result.push(u);
+
+        }
+        console.log("START!!!");
+        let result2 = [];
+        let curr_id = "";
+        let leng = result.length;
+        while(leng>0){
+            let o = result[0];
+            curr_id = o.id;
+            result.splice(0,1);
+            let i = 0;
+            while( i<result.length){
+                if ( curr_id === result[i].id) {
+                    if(o.data === result[i].data){
+                        console.log(result[i][o.data][result[i].site]);
+                        o[o.data][result[i].site]=result[i][o.data][result[i].site];
+                    } else {
+                        o[result[i].data] = {};
+                        o[result[i].data][result[i].site]=result[i][result[i].data][result[i].site];
+                    }
+                    result.splice(i, 1);
+                } else {
+                    i++;
+                }
+            }
+            o.data = undefined;
+            o.site = undefined;
+            result2.push(o);
+            leng = result.length;
+        }
+
+        res.send(result2);
     });
 
     app.post('/urls', async function (req, res){
@@ -380,6 +466,54 @@ function configureEndpoints(app) {
         res.redirect('/competitors');
     });
 
+    app.post('/parseOneCompetitor', function (req, res) {
+
+        Url.find({competitor: req.body._id, active:true}, function (err, docs) {
+            if (err) throw err;
+
+            for (var i in docs) {
+                parseUrl(docs[i]);
+            }
+
+        }).then(function () {
+            res.redirect('/parser');
+        });
+
+
+    });
+
+
+    function parseUrl(url) {
+
+        var correctUrl = url.url.includes("http:") ? url.url.replace("http", "https") : url.url;
+
+        if (url.url.includes("officeman.ua")) {
+            officeman.parse(correctUrl, url);
+        } else if (url.url.includes("a-techno.com")) {
+            aTechno.parse(correctUrl, url);
+        } else if (url.url.includes("nobu.com.ua")) {
+            nobu.parse(correctUrl, url);
+        } else if (url.url.includes("mobilluck.com")) {
+            mobilluk.parse(correctUrl, url);
+        }
+
+    }
+
+
+    app.post('/parseAllCompetitors', function (req, res) {
+
+        Url.find({active: true}, function (err, docs) {
+            if (err) throw err;
+
+            for (var i in docs) {
+                parseUrl(docs[i]);
+            }
+
+        }).then(function () {
+            res.redirect('/parser');
+        });
+
+    });
 
     /*-----------------------------------------------------------
     |||||||||||||||||||||||| DELETE |||||||||||||||||||||||||||||
