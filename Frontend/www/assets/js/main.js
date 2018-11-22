@@ -73,7 +73,7 @@ $(document).ready(function(){
         let table = document.getElementById("employee_table");
         table.innerHTML = "";
         $(".loading-msg").show();
-
+        let d = $('#dateTill').val();
         getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').val(),$('#timeFrom').val(),$('#dateTill').val(), $('#timeTill').val());
     });
 
@@ -173,8 +173,8 @@ function getAnalysis(price, brand, comp, datef, timef, datet, timet){
         byPrice: (price)?price:"any",
         byBrand: (brand)?brand:"all",
         byComp: (comp)?comp:"all",
-        dateFrom: (datef && timef)?toDateTime(datef, timef):"all",
-        dateTill: (datet && timet)?toDateTime(datet, timet):"all"
+        dateFrom: (datef !== "" && timef !== "")?toDateTime(datef, timef):"all",
+        dateTill: (datet !== "" && timet !== "")?toDateTime(datet, timet):"all"
     };
     console.log(data.byPrice);
     console.log(data.byBrand);
@@ -188,11 +188,10 @@ function getAnalysis(price, brand, comp, datef, timef, datet, timet){
 }
 
 function toDateTime(date, time){
-    let dt = to24time(time.trim());
-    return (date.trim() + " " + dt);
+    return (date + " " + time);
 }
 
-function to24time(time){
+function to24time(format, time){
     let hours = Number(time.match(/^(\d+)/)[1]);
     let minutes = Number(time.match(/:(\d+)/)[1]);
     let AMPM = time.match(/\s(.*)$/)[1];

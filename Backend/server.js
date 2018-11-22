@@ -182,7 +182,6 @@ function configureEndpoints(app) {
         param.dataTo = req.body.dateTill;
         console.log(param);
         let all_analysis_data = await Analysis.find({});
-        console.log(all_analysis_data);
         let result = [];
 
         for (let analysisObject of all_analysis_data) {
@@ -262,7 +261,6 @@ function configureEndpoints(app) {
     }
 
     function parametersMatching(object, parameters) {
-        console.log(object);
         let priceMatch = false;
         switch (parameters.priceEq) {
             case ">": {
@@ -325,7 +323,7 @@ function configureEndpoints(app) {
         let dateParseFrom = dateFrom.split(" ")[0];
         let dateParse = date.split(" ")[0];
         dateParse = dateParse.split("-")[1] + "-" + dateParse.split("-")[0] + "-" + dateParse.split("-")[2];
-        dateParseFrom = dateParseFrom.split("-")[1] + "-" + dateParseFrom.split("-")[0] + "-" + dateParseFrom.split("-")[2];
+        dateParseFrom = dateParseFrom.split("-")[2] + "-" + dateParseFrom.split("-")[1] + "-" + dateParseFrom.split("-")[0];
         for (let i = 2; i >= 0; i--) {
             if (parseInt(dateParse.split("-")[i], 10) > parseInt(dateParseFrom.split("-")[i], 10)) return true;
             if (parseInt(dateParse.split("-")[i], 10) < parseInt(dateParseFrom.split("-")[i], 10)) {
@@ -350,7 +348,7 @@ function configureEndpoints(app) {
         let dateParseTo = dateTo.split(" ")[0];
         let dateParse = date.split(" ")[0];
         dateParse = dateParse.split("-")[1] + "-" + dateParse.split("-")[0] + "-" + dateParse.split("-")[2];
-        dateParseTo = dateParseTo.split("-")[1] + "-" + dateParseTo.split("-")[0] + "-" + dateParseTo.split("-")[2];
+        dateParseTo = dateParseTo.split("-")[2] + "-" + dateParseTo.split("-")[1] + "-" + dateParseTo.split("-")[0];
         for (let i = 2; i >= 0; i--) {
             if (parseInt(dateParse.split("-")[i], 10) < parseInt(dateParseTo.split("-")[i], 10)) return true;
             if (parseInt(dateParse.split("-")[i], 10) > parseInt(dateParseTo.split("-")[i], 10)) {
