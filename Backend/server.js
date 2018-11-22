@@ -360,7 +360,7 @@ function configureEndpoints(app) {
 
     app.post('/parseAllCompetitors', function (req, res) {
 
-        Url.find({}, function (err, docs) {
+        Url.find({active:true}, function (err, docs) {
             if (err) throw err;
 
             let promises = [];
@@ -369,6 +369,8 @@ function configureEndpoints(app) {
                 parseUrl(docs[i]);
             }
 
+        }).then(function () {
+            res.redirect('/items');
         });
 
         //save each price in db
