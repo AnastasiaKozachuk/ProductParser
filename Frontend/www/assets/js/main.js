@@ -74,7 +74,7 @@ $(document).ready(function(){
         table.innerHTML = "";
         $(".loading-msg").show();
 
-        getAnalysis();
+        getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').attr('value'),$('#timeFrom').attr('value'),$('#dateTill').attr('value'), $('#timeTill').attr('value'));
     });
 
     //filter modal window
@@ -166,14 +166,14 @@ function getUrls(id){
     });
 }
 
-function getAnalysis(){
+function getAnalysis(price, brand, comp, datef, timef, datet, timet){
     let url = "/analysis/show";
-    let data = {
-        byPrice:  $('#byPrice-filter').attr('value'),
-        byBrand: $('#byBrand').attr('value'),
-        byComp: $('#byComp').attr('value'),
-        dateFrom: toDateTime($('#dateFrom').attr('value'), $('#timeFrom').attr('value')),
-        dateTill: toDateTime($('#dateTill').attr('value'), $('#timeTill').attr('value'))
+    const data = {
+        byPrice: (price)?price:"any",
+        byBrand: (brand)?brand:"all",
+        byComp: (comp)?comp:"all",
+        dateFrom: (datef && timef)?toDateTime(datef, timef):"any",
+        dateTill: (datet && timet)?toDateTime(datet, timet):"any"
     };
 
     $.post(url, data, function(data){
