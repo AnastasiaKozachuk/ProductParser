@@ -187,17 +187,6 @@ function getAnalysis(price, brand, comp, datef, timef, datet, timet){
     });
 }
 
-let timepicker = new TimePicker('time', {
-    lang: 'en',
-    theme: 'dark'
-});
-timepicker.on('change', function(evt) {
-
-    let value = (evt.hour || '00') + ':' + (evt.minute || '00');
-    evt.element.value = value;
-
-});
-
 function toDateTime(date, time){
     let dt = to24time(("24", time.trim()));
     return (date.trim() + " " + dt);
