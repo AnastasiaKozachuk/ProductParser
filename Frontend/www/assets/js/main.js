@@ -73,22 +73,46 @@ $(document).ready(function(){
         let table = document.getElementById("employee_table");
         table.innerHTML = "";
         $(".loading-msg").show();
+
         getAnalysis();
     });
 
-//filter modal window
+    //filter modal window
 
-    var prev = $(".link-active");
+    let prev = $(".link-active");
     $(".modal-filter-choose-item").click(function () {
         prev.removeClass("link-active");
         $(this).addClass("link-active");
         prev=$(this);
+        $('#byPrice-filter').attr('value', ($(this).attr('id')));
+        alert( $('#byPrice-filter').attr('value'));
     });
 
     $(".modal-filter-select-all").click(function () {
-        prev.removeClass("link-active");
-        $(this).addClass("link-active");
-        prev=$(this);
+        $(this).toggleClass("link-active");
+    });
+
+    $('#brand-select').change(function () {
+        let selectedText = $(this).find("option:selected").text();
+        alert(selectedText);
+        $('#byBrand').attr('value', selectedText);
+        alert( $('#byBrand').attr('value'));
+    });
+
+    $('#allBrands').click(function(){
+        $('#byBrand').attr('value', ($(this).attr('id')));
+        alert( $('#byBrand').attr('value'));
+    });
+
+    $('#allComp').click(function(){
+        $('#byComp').attr('value', ($(this).attr('id')));
+        alert( $('#byComp').attr('value'));
+    });
+
+    $('#competitor-select-filter').change(function () {
+        let selectedText = $(this).find("option:selected").text();
+        $('#byComp').attr('value', selectedText);
+        alert( $('#byComp').attr('value'));
     });
 
 });
@@ -144,10 +168,35 @@ function getUrls(id){
 
 function getAnalysis(){
     let url = "/analysis/show";
-    $.post(url, function(data){
+    let data = {
+        byPrice:  $('#byPrice-filter').attr('value'),
+        byBrand: $('#byBrand').attr('value'),
+        byComp: $('#byComp').attr('value'),
+        dateFrom: toDateTime($('#dateFrom').attr('value'), $('#timeFrom').attr('value')),
+        dateTill: toDateTime($('#dateTill').attr('value'), $('#timeTill').attr('value'))
+    };
+
+    $.post(url, data, function(data){
         console.log(data);
         displayAnalysis(data);
     });
+}
+
+function toDateTime(date, time){
+    return (date + " " + to24time(time));
+}
+
+function to24time(time){
+    let hours = Number(time.match(/^(\d+)/)[1]);
+    let minutes = Number(time.match(/:(\d+)/)[1]);
+    let AMPM = time.match(/\s(.*)$/)[1];
+    if(AMPM === "PM" && hours<12) hours = hours+12;
+    if(AMPM === "AM" && hours===12) hours = hours-12;
+    let sHours = hours.toString();
+    let sMinutes = minutes.toString();
+    if(hours<10) sHours = "0" + sHours;
+    if(minutes<10) sMinutes = "0" + sMinutes;
+    alert(sHours + ":" + sMinutes + ":00");
 }
 
 // display urls of competitor in html table

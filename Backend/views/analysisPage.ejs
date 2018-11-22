@@ -10,54 +10,56 @@
                 <div class="modal-filter__main-section-item noborder-left">
                     <h3 class="modal-filter__main-section-h">By date:</h3>
                     <div class="modal-filter-from-to-text">From</div>
-                    <input class="modal-filter__main-section-input" type="date" name="dateFrom" id="datefrom">
-                    <input class="modal-filter__main-section-input" type="time" name="dateFrom" id="timefrom">
+                    <input class="modal-filter__main-section-input" id="dateFrom" type="date" name="dateFrom">
+                    <input class="modal-filter__main-section-input" id="timeFrom" type="time" name="timeFrom">
                     <div class="modal-filter-from-to-text">Till</div>
-                    <input class="modal-filter__main-section-input" type="date" name="dateTill" id="datetill">
-                    <input class="modal-filter__main-section-input" type="time" name="dateFrom" id="timetill">
-                    <button class="btn submit-button disp-none" type="button">Sort</button>
+                    <input class="modal-filter__main-section-input" id="dateTill" type="date" name="dateTill">
+                    <input class="modal-filter__main-section-input" id="timeTill" type="time" name="timeTill">
+
                 </div>
                 <div class="modal-filter__main-section-item modal-filter-average-section mobile-no-border-left ">
                     <h3 class="modal-filter__main-section-h">By price:</h3>
                     <div class="modal-filter-choose-item" id="any">Any</div>
-                    <div class="modal-filter-choose-item" id="lt">Less than our</div>
-                    <div class="modal-filter-choose-item" id="mt">More than our</div>
-                    <div class="modal-filter-choose-item" id="met">More or same as our</div>
-                    <div class="modal-filter-choose-item" id="let">Less or same as our</div>
-                    <button class="btn submit-button disp-none" type="button">Sort</button>
+                    <div class="modal-filter-choose-item" id="===">Equal</div>
+                    <div class="modal-filter-choose-item" id=">">Less than our</div>
+                    <div class="modal-filter-choose-item" id="<">More than our</div>
+                    <div class="modal-filter-choose-item" id="<=">More or same as our</div>
+                    <div class="modal-filter-choose-item" id=">=">Less or same as our</div>
+                    <input type="hidden" id="byPrice-filter" name="byPrice"/>
                 </div>
                 <div class="modal-filter__main-section-item mobile-no-border-left">
+                    <input type="hidden" id="byBrand" name="byBrand"/>
                     <h3 class="modal-filter__main-section-h">By brand:</h3>
-                    <div class="modal-filter-select-all">Select all brands</div>
+                    <div class="modal-filter-select-all" id="all">Select all brands</div>
                     <div class="modal-filter-text-or">Or enter name of brand: </div>
                     <div class="form-group input">
-                        <label for="sel1">Select list:</label>
-                        <select class="form-control" id="sel1">
+                        <label for="brand-select">Select list:</label>
+                        <select class="form-control" id="brand-select">
                             <% brands.forEach( brand => { %>
                                 <option><%= brand%></option>
                             <% }) %>
                         </select>
                     </div>
-                    <button class="btn submit-button disp-none" type="button">Sort</button>
                 </div>
                 <div class="modal-filter__main-section-item mobile-no-border-left">
+                    <input type="hidden" id="byComp" name="byComp"/>
                     <h3 class="modal-filter__main-section-h">By competitors:</h3>
-                    <div class="modal-filter-select-all">Select all competitors</div>
+                    <div class="modal-filter-select-all" id="all">Select all competitors</div>
                     <div class="modal-filter-text-or">Or enter link of competitor: </div>
                     <div class="form-group input">
-                        <label for="sel2">Select list:</label>
-                        <select class="form-control" id="sel2">
+                        <label for="competitor-select-filter">Select list:</label>
+                        <select class="form-control" id="competitor-select-filter">
                             <% competitors.forEach(competitor => { %>
                                 <option><%= competitor.site%></option>
                             <% }) %>
                         </select>
                     </div>
-                    <button class="btn submit-button disp-none" type="button">Sort</button>
                 </div>
                 <div>
 
                 </div>
             </div>
+            <button class="btn submit-button" type="button">Sort</button>
         </div>
         <br/>
         <br/>
