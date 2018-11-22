@@ -106,142 +106,143 @@ function configureEndpoints(app) {
     });
 
     app.post('/item', async function (req, res) {
-    app.post('/item', async function (req, res){
-        let item_info = await Item.findOne({_id: req.body._id});
-        let all_competitors = await Competitor.find({});
-        let results = [];
-        for (let i of all_competitors) {
-            let u = {};
-            u.comp_name = i.comp_name;
-            u.site = i.site;
+        app.post('/item', async function (req, res) {
+            let item_info = await Item.findOne({_id: req.body._id});
+            let all_competitors = await Competitor.find({});
+            let results = [];
+            for (let i of all_competitors) {
+                let u = {};
+                u.comp_name = i.comp_name;
+                u.site = i.site;
 
-            let urls_item = await Url.findOne({item: req.body._id, competitor: i._id});
-            if (urls_item === null || isEmptyObject(urls_item)) {
-                u.url = "";
-            } else {
-                u.url = urls_item.url;
+                let urls_item = await Url.findOne({item: req.body._id, competitor: i._id});
+                if (urls_item === null || isEmptyObject(urls_item)) {
+                    u.url = "";
+                } else {
+                    u.url = urls_item.url;
+                }
+                console.log(u);
+                results.push(u);
+
             }
-            console.log(u);
-            results.push(u);
-
-        }
-        res.render('viewItemPage', {
-            pageTitle: 'My Item Competitors',
-            competitors: results,
-            item: item_info
+            res.render('viewItemPage', {
+                pageTitle: 'My Item Competitors',
+                competitors: results,
+                item: item_info
+            });
         });
     });
 
-    app.post('/competitors/data', async function (req, res){
-        const keys = Object.keys((req.body)[0]);
-        let my_competitors = [];
-        for(let i = 3; i<keys.length; i++) {
-            //get the site
-            const site_name = keys[i].trim();
-            if(!my_competitors.includes(site_name)){
-                my_competitors.push(site_name);
-            }
-        }
-        for(let competitor of my_competitors){
-            let result = await Competitor.findOne({site: competitor});
-            if (result === null || isEmptyObject(result)) {
-                let newCompetitor = Competitor({
-                    _id: new mongoose.Types.ObjectId(),
-                    comp_name: competitor,
-                    site: competitor
-                });
-                // save the Competitor
-                newCompetitor.save(function (err) {
-                    if (err) throw err;
-                    console.log('Competitor created!');
-                });
-            }
-        }
-
-        for(let url of req.body){
-            if (!isEmptyObject(url)) {
-                let item = await Item.findOne({id: url[keys[0]]});
-                for(let i = 3; i<keys.length; i++) {
-                    let comp = await Competitor.findOne({site: keys[i]});
-                    const comp_url = url[keys[i]];
-                    let found_url = await Url.find({url: comp_url});
-                    if(found_url === null || isEmptyObject(found_url)){
-                        let newUrl = Url({
-                            item: item._id,
-                            competitor: comp._id,
-                            url: comp_url,
-                            active: item.active
-                        });
-                        // save the Url
-                        newUrl.save(function (err) {
-                            if (err) throw err;
-                            console.log('Url created!');
-                        });
-                    }
-
+        app.post('/competitors/data', async function (req, res) {
+            const keys = Object.keys((req.body)[0]);
+            let my_competitors = [];
+            for (let i = 3; i < keys.length; i++) {
+                //get the site
+                const site_name = keys[i].trim();
+                if (!my_competitors.includes(site_name)) {
+                    my_competitors.push(site_name);
                 }
             }
-        }
-        res.redirect('/competitors');
-    });
-
-    app.post('/urls', async function (req, res){
-        let all_items = await Item.find({});
-        let results = [];
-        for(let i of all_items){
-            let u = {};
-            u.id = i.id;
-            u.name = i.name;
-            u.vendorCode = i.vendorCode;
-
-            let urls_comp = await Url.findOne({competitor: req.body._id, item: i._id});
-            if(urls_comp === null || isEmptyObject(urls_comp)){
-                u.url = "";
-                u.active = i.active;
-            }else{
-                u.url = urls_comp.url;
-                u.active = urls_comp.active;
+            for (let competitor of my_competitors) {
+                let result = await Competitor.findOne({site: competitor});
+                if (result === null || isEmptyObject(result)) {
+                    let newCompetitor = Competitor({
+                        _id: new mongoose.Types.ObjectId(),
+                        comp_name: competitor,
+                        site: competitor
+                    });
+                    // save the Competitor
+                    newCompetitor.save(function (err) {
+                        if (err) throw err;
+                        console.log('Competitor created!');
+                    });
+                }
             }
-            u.active_item = i.active;
-            console.log(u);
-            results.push(u);
 
-        }
-        res.send(results);
-    });
+            for (let url of req.body) {
+                if (!isEmptyObject(url)) {
+                    let item = await Item.findOne({id: url[keys[0]]});
+                    for (let i = 3; i < keys.length; i++) {
+                        let comp = await Competitor.findOne({site: keys[i]});
+                        const comp_url = url[keys[i]];
+                        let found_url = await Url.find({url: comp_url});
+                        if (found_url === null || isEmptyObject(found_url)) {
+                            let newUrl = Url({
+                                item: item._id,
+                                competitor: comp._id,
+                                url: comp_url,
+                                active: item.active
+                            });
+                            // save the Url
+                            newUrl.save(function (err) {
+                                if (err) throw err;
+                                console.log('Url created!');
+                            });
+                        }
 
-    app.post('/items/data', function (req, res){
-        console.log("Request: " + util.inspect(req.body, false, null));
-        const keys = Object.keys((req.body)[0]);
-        (req.body).forEach(item => {
-            if(!isEmptyObject(item)){
-                Item.find({id: item[keys[0]]}, function (err, docs) {
-                    if (!Array.isArray(docs) || !docs.length){
-                        let newItem = Item({
-                            _id: new mongoose.Types.ObjectId(),
-                            id: item[keys[0]],
-                            vendorCode: item[keys[1]],
-                            name: item[keys[2]],
-                            brand: item[keys[3]],
-                            price: item[keys[4]]
-                        });
-                        // save the user
-                        newItem.save(function(err) {
-                            if (err) throw err;
-                            console.log('Item created!');
-                        });
                     }
-                });
+                }
             }
+            res.redirect('/competitors');
         });
-        res.redirect('/items');
-    });
 
-    app.post('/additem', function (req, res){
-        console.log("/item/create SUCCESS");
-            if(req.body.id !== "" || req.body.id !== undefined){
+        app.post('/urls', async function (req, res) {
+            let all_items = await Item.find({});
+            let results = [];
+            for (let i of all_items) {
+                let u = {};
+                u.id = i.id;
+                u.name = i.name;
+                u.vendorCode = i.vendorCode;
+
+                let urls_comp = await Url.findOne({competitor: req.body._id, item: i._id});
+                if (urls_comp === null || isEmptyObject(urls_comp)) {
+                    u.url = "";
+                    u.active = i.active;
+                } else {
+                    u.url = urls_comp.url;
+                    u.active = urls_comp.active;
+                }
+                u.active_item = i.active;
+                console.log(u);
+                results.push(u);
+
+            }
+            res.send(results);
+        });
+
+        app.post('/items/data', function (req, res) {
+            console.log("Request: " + util.inspect(req.body, false, null));
+            const keys = Object.keys((req.body)[0]);
+            (req.body).forEach(item => {
+                if (!isEmptyObject(item)) {
+                    Item.find({id: item[keys[0]]}, function (err, docs) {
+                        if (!Array.isArray(docs) || !docs.length) {
+                            let newItem = Item({
+                                _id: new mongoose.Types.ObjectId(),
+                                id: item[keys[0]],
+                                vendorCode: item[keys[1]],
+                                name: item[keys[2]],
+                                brand: item[keys[3]],
+                                price: item[keys[4]]
+                            });
+                            // save the user
+                            newItem.save(function (err) {
+                                if (err) throw err;
+                                console.log('Item created!');
+                            });
+                        }
+                    });
+                }
+            });
+            res.redirect('/items');
+        });
+
+        app.post('/additem', function (req, res) {
+            console.log("/item/create SUCCESS");
+            if (req.body.id !== "" || req.body.id !== undefined) {
                 Item.find({id: req.body.id}, function (err, docs) {
-                    if (!Array.isArray(docs) || !docs.length){
+                    if (!Array.isArray(docs) || !docs.length) {
                         let newItem = Item({
                             _id: new mongoose.Types.ObjectId(),
                             id: req.body.id,
@@ -251,154 +252,155 @@ function configureEndpoints(app) {
                             price: req.body.price
                         });
                         // save the user
-                        newItem.save(function(err) {
+                        newItem.save(function (err) {
                             if (err) throw err;
                             console.log('Item created!');
                         });
                     }
                 });
             }
-        res.redirect('/items');
-    });
+            res.redirect('/items');
+        });
 
-    app.post('/addcompetitor', function (req, res){
-        console.log("/competitor/create SUCCESS");
-        if(req.body.site !== "" || req.body.site !== undefined){
-            Competitor.find({site: req.body.site}, function (err, docs) {
-                if (!Array.isArray(docs) || !docs.length){
-                    let newCompetitor = Competitor({
-                        _id: new mongoose.Types.ObjectId(),
-                        comp_name: (req.body.comp_name !== "" || req.body.comp_name !== undefined)?req.body.comp_name:req.body.site,
-                        site: req.body.site
-                    });
-                    // save the user
-                    newCompetitor.save(function(err) {
-                        if (err) throw err;
-                        console.log('Competitor created!');
-                    });
-                }
-            });
-        }
-        res.redirect('/competitors');
-    });
+        app.post('/addcompetitor', function (req, res) {
+            console.log("/competitor/create SUCCESS");
+            if (req.body.site !== "" || req.body.site !== undefined) {
+                Competitor.find({site: req.body.site}, function (err, docs) {
+                    if (!Array.isArray(docs) || !docs.length) {
+                        let newCompetitor = Competitor({
+                            _id: new mongoose.Types.ObjectId(),
+                            comp_name: (req.body.comp_name !== "" || req.body.comp_name !== undefined) ? req.body.comp_name : req.body.site,
+                            site: req.body.site
+                        });
+                        // save the user
+                        newCompetitor.save(function (err) {
+                            if (err) throw err;
+                            console.log('Competitor created!');
+                        });
+                    }
+                });
+            }
+            res.redirect('/competitors');
+        });
 
-    app.post('/edititem', function (req, res){
-        console.log(req.body.id);
-        Item.updateOne(
-            { id: req.body.id},
-            { $set:
+        app.post('/edititem', function (req, res) {
+            console.log(req.body.id);
+            Item.updateOne(
+                {id: req.body.id},
                 {
-                    name: req.body.name,
-                    brand: req.body.brand,
-                    price: req.body.price
+                    $set:
+                        {
+                            name: req.body.name,
+                            brand: req.body.brand,
+                            price: req.body.price
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
                 }
-            }, function(err, res) {
+            );
+            res.redirect('/items');
+        });
+
+        app.post('/editUrlItem', function (req, res) {
+            console.log(req.body.id);
+            Url.updateOne(
+                {url: req.body.url},
+                {
+                    $set:
+                        {
+                            url: req.body.url
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+            res.redirect('/item, req.body.id');
+        });
+
+        app.post('/editUrlCompetitor', function (req, res) {
+            console.log(req.body.url);
+            Url.updateOne(
+                {url: req.body.url},
+                {
+                    $set:
+                        {
+                            url: req.body.url
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+            res.redirect('/competitors');
+        });
+
+        app.post('/editcompetitor', function (req, res) {
+            console.log(req.body.site);
+            Competitor.updateOne(
+                {site: req.body.site},
+                {
+                    $set:
+                        {
+                            comp_name: req.body.comp_name,
+                            site: req.body.site
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+            res.redirect('/competitors');
+        });
+
+        app.post('/active-disable', function (req, res) {
+            let value_bool = (req.body.active !== 'true');
+
+            Item.updateOne(
+                {id: req.body.id},
+                {
+                    $set:
+                        {
+                            active: value_bool
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+            res.redirect('/items');
+        });
+
+
+        app.post('/parseOneCompetitor', function (req, res) {
+
+            Url.find({competitor: req.body._id, active:true}, function (err, docs) {
                 if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/items');
-    });
 
-    app.post('/editUrlItem', function (req, res){
-        console.log(req.body.id);
-        Url.updateOne(
-            { url: req.body.url},
-            { $set:
-                    {
-                        url: req.body.url
-                    }
-            }, function(err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/item, req.body.id');
-    });
+                for (var i in docs) {
+                   parseUrl(docs[i]);
+                }
 
-    app.post('/editUrlCompetitor', function (req, res){
-        console.log(req.body.url);
-        Url.updateOne(
-            { url: req.body.url},
-            { $set:
-                    {
-                        url: req.body.url
-                    }
-            }, function(err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/competitors');
-    });
+            }).then(function () {
+                res.redirect('/parser');
+            });
 
-    app.post('/editcompetitor', function (req, res){
-        console.log(req.body.site);
-        Competitor.updateOne(
-            { site: req.body.site},
-            { $set:
-                    {
-                        comp_name: req.body.comp_name,
-                        site: req.body.site
-                    }
-            }, function(err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/competitors');
-    });
-
-    app.post('/active-disable', function (req, res){
-        let value_bool = (req.body.active !== 'true');
-
-        Item.updateOne(
-            { id: req.body.id},
-            { $set:
-                    {
-                        active: value_bool
-                    }
-            }, function(err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/items');
-    });
-
-
-    app.post('/parseOneCompetitor', function (req, res) {
-
-
-        Url.find({competitor: req.body._id}, function (err, docs) {
-            if (err) throw err;
-
-
-            for (var i in docs) {
-                console.log(parseUrl(docs[i].url));
-            }
-
-            res.send("Ok");
 
         });
 
-        //save each price in db
 
-
-    });
-
-
-    function parseUrl(url, delay) {
+        function parseUrl(url) {
 
             var correctUrl = url.url.includes("http:") ? url.url.replace("http", "https") : url.url;
 
             if (url.url.includes("officeman.ua")) {
-                 officeman.parse(correctUrl, url);
+                officeman.parse(correctUrl, url);
             } else if (url.url.includes("a-techno.com")) {
                 aTechno.parse(correctUrl, url);
             } else if (url.url.includes("nobu.com.ua")) {
@@ -407,123 +409,122 @@ function configureEndpoints(app) {
                 mobilluk.parse(correctUrl, url);
             }
 
-    }
+        }
 
 
-    app.post('/parseAllCompetitors', function (req, res) {
+        app.post('/parseAllCompetitors', function (req, res) {
 
-        Url.find({active:true}, function (err, docs) {
-            if (err) throw err;
+            Url.find({active: true}, function (err, docs) {
+                if (err) throw err;
 
-            let promises = [];
+                for (var i in docs) {
+                    parseUrl(docs[i]);
+                }
 
-            for (var i in docs) {
-                parseUrl(docs[i]);
-            }
+            }).then(function () {
+                res.redirect('/parser');
+            });
 
-        }).then(function () {
-            res.redirect('/items');
         });
 
-        //save each price in db
-    });
+        app.post('/active-disable-url', function (req, res) {
+            let value_bool = (req.body.active !== 'true');
 
-    app.post('/active-disable-url', function (req, res){
-        let value_bool = (req.body.active !== 'true');
+            Url.updateOne(
+                {url: req.body.url},
+                {
+                    $set:
+                        {
+                            active: value_bool
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+            res.redirect('/competitors');
+        });
 
-        Url.updateOne(
-            { url: req.body.url},
-            { $set:
-                    {
-                        active: value_bool
+        app.post('/active-disable-competitor', function (req, res) {
+            let value_bool = (req.body.active !== 'true');
+
+            Competitor.updateOne(
+                {site: req.body.site},
+                {
+                    $set:
+                        {
+                            active: value_bool
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+            res.redirect('/competitors');
+        });
+
+
+        /*-----------------------------------------------------------
+        |||||||||||||||||||||||| DELETE |||||||||||||||||||||||||||||
+        -----------------------------------------------------------*/
+        app.delete('/deleteAllComp', function (req, res) {
+            Competitor.deleteMany({}, function (err) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log('success');
+                        res.redirect('/competitors');
                     }
-            }, function(err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/competitors');
-    });
+                }
+            );
+        });
 
-    app.post('/active-disable-competitor', function (req, res){
-        let value_bool = (req.body.active !== 'true');
-
-        Competitor.updateOne(
-            { site: req.body.site},
-            { $set:
-                    {
-                        active: value_bool
+        app.post('/deleteitem', function (req, res) {
+            Item.deleteOne({id: req.body.id}, function (err) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log('success');
+                        res.redirect('/items');
                     }
-            }, function(err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
-        res.redirect('/competitors');
-    });
+                }
+            );
+        });
 
-
-    /*-----------------------------------------------------------
-    |||||||||||||||||||||||| DELETE |||||||||||||||||||||||||||||
-    -----------------------------------------------------------*/
-    app.delete('/deleteAllComp', function (req, res){
-        Competitor.deleteMany({}, function(err) {
+        app.post('/deletecompetitor', function (req, res) {
+            Url.deleteMany({competitor: req.body._id}, function (err) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log('success');
+                        //res.redirect('/competitors');
+                    }
+                }
+            );
+            Competitor.deleteOne({_id: req.body._id}, function (err) {
                 if (err) {
                     console.log(err)
                 } else {
                     console.log('success');
                     res.redirect('/competitors');
                 }
-            }
-        );
-    });
-
-    app.post('/deleteitem', function (req, res){
-        Item.deleteOne({id: req.body.id}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    res.redirect('/items');
-                }
-            }
-        );
-    });
-
-    app.post('/deletecompetitor', function (req, res){
-        Url.deleteMany({competitor: req.body._id}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    //res.redirect('/competitors');
-                }
-            }
-        );
-        Competitor.deleteOne({_id: req.body._id}, function(err) {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log('success');
-                res.redirect('/competitors');
-            }
+            });
         });
-    });
 
-    app.delete('/deleteAllItems', function (req, res){
-        Item.deleteMany({}, function(err) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('success');
-                    res.redirect('/items');
+        app.delete('/deleteAllItems', function (req, res) {
+            Item.deleteMany({}, function (err) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log('success');
+                        res.redirect('/items');
+                    }
                 }
-            }
-        );
-    });
-}
+            );
+        });
+    }
 
 function startServer(port) {
 

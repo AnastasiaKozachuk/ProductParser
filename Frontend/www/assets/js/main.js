@@ -28,13 +28,9 @@ $(document).ready(function(){
         }
     });
 
-    $('.parse-comp').click(function (){
-        $('#_id').val($(this).attr('id'));
-    });
-
-    // set id of competitor to be parsed
-    $('.parse-comp').click(function (){
-        $('#_id').val($(this).attr('id'));
+    $('.parseOneCompBtn').click(function (){
+        $('#IDparseOne').attr('value', ($(this).attr('id')));
+        console.log( $('#IDparseOne').attr('value'));
     });
 
     // set id of item to be deleted
