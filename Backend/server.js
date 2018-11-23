@@ -51,10 +51,12 @@ function configureEndpoints(app) {
     });
     app.get('/competitors', async function (req, res) {
         //window.location.reload();
+        let items_doc = await Item.find({});
         Competitor.find({}, function (err, results) {
             res.render('competitorsPage', {
                 pageTitle: 'My Competitors',
-                competitors: results
+                competitors: results,
+                items: items_doc
             });
         });
     });
@@ -118,6 +120,27 @@ function configureEndpoints(app) {
             competitors: results,
             item: item_info
         });
+    });
+
+    app.post('/addcompitemurl', async function(req, res){
+        let item = await Item.findOne({ id: req.body.id });
+        let comp = await Competitor.findOne({ site: req.body.site });
+        Url.findOne({url: req.body.url}, function(err, urls){
+            if ( urls === null || isEmptyObject(urls)) {
+                let newUrl = Url({
+                    item: item._id,
+                    competitor: comp._id,
+                    url: urls.url,
+                    active: item.active
+                });
+                // save the Url
+                newUrl.save(function (err) {
+                    if (err) throw err;
+                    console.log('Url created!');
+                });
+            }
+        });
+        res.redirect('/competitors');
     });
 
     app.post('/competitors/data', async function (req, res) {

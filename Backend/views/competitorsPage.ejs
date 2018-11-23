@@ -21,19 +21,26 @@
 <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="#">
+            <form method="post" action="/addcompitemurl">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Add New Item</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="itemid">Item id: </label>
-                        <input type="text" class="form-control" name="id" id="itemid"/>
-                        <label for="website">Website: </label>
-                        <input type="text" class="form-control" name="site" id="website"/>
+                        <div class="form-group input">
+                            <label for="item-select">Select item id: </label>
+                            <select class="form-control" id="item-select">
+                                <% items.forEach( item => { %>
+                                    <option><%= item.id%></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <input type="hidden" class="form-control" name="id" id="itemid"/>
+                        <label for="website-add-url">Website: </label>
+                        <input type="text" class="form-control" name="site" id="website-add-url" disabled/>
                         <label for="url">Url: </label>
-                        <input type="text" class="form-control" name="url" id="url"/>
+                        <input type="text" class="form-control" name="url" id="url" required/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -58,7 +65,7 @@
                         <label for="competitorname">Competitor name: </label>
                         <input type="text" class="form-control" name="comp_name" id="competitorname"/>
                         <label for="website">Website: </label>
-                        <input type="text" class="form-control" name="site" id="website"/>
+                        <input type="text" class="form-control" name="site" id="website" required/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -74,7 +81,7 @@
 <div class="modal fade" id="editformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="/editUrl">
+            <form method="post" action="/editUrlCompetitor">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myEditModalLabel">Edit Item</h4>
@@ -108,9 +115,9 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="editcompetitorname">Competitor name: </label>
-                        <input type="text" class="form-control" name="comp_name" id="editcompetitorname"/>
+                        <input type="text" class="form-control" name="comp_name" id="editcompetitorname" required/>
                         <label for="editcompetitorsite">Competitor website: </label>
-                        <input type="text" class="form-control" name="site" id="editcompetitorsite"/>
+                        <input type="text" class="form-control" name="site" id="editcompetitorsite" required/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -190,10 +197,6 @@
         </button>
         <button class="edit-competitor-btn round-btn" data-toggle="modal" data-target="#editNameformModal">
             <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-        <button class="upload-url round-btn" data-toggle="modal" data-target="#fileModal">
-            <span class="glyphicon glyphicon-link"></span>
-            <span class="glyphicon glyphicon-file"></span>
         </button>
         <button class="add-url round-btn" data-toggle="modal" data-target="#formModal">
             <span class="glyphicon glyphicon-link"></span>

@@ -8,6 +8,16 @@ $(document).ready(function(){
         $(this).blur()
     });
 
+    $('.add-url').click(function(){
+        $('#website-add-url').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-site').text().trim());
+    });
+
+    $('.editUrlCompetitor').click(function(){
+        $('#comp_id').val($(this).data('comp_id'));
+        $('#item_id').val($(this).data('item_id'));
+        $('#editUrl').val($(this).data('url'));
+    });
+
     // set selected competitor active
     $('.competitor-item').click(function(){
         $('.side-panel-competitors-center>div.selected-competitor').removeClass("selected-competitor");
@@ -46,8 +56,8 @@ $(document).ready(function(){
 
     // set edit competitor input fields values
     $('.edit-competitor-btn').click(function(){
-        $('#editcompetitorname').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-name').text());
-        $('#editcompetitorsite').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-site').text());
+        $('#editcompetitorname').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-name').text().trim());
+        $('#editcompetitorsite').val($('.side-panel-competitors-center>div.selected-competitor>div.competitor-site').text().trim());
     });
 
     // set edit item input fields values
@@ -73,7 +83,6 @@ $(document).ready(function(){
         let table = document.getElementById("employee_table");
         table.innerHTML = "";
         $(".loading-msg").show();
-        let d = $('#dateTill').val();
         getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').val(),$('#timeFrom').val(),$('#dateTill').val(), $('#timeTill').val());
     });
 
@@ -86,6 +95,13 @@ $(document).ready(function(){
         prev=$(this);
         $('#byPrice-filter').attr('value', ($(this).attr('id')));
         alert( $('#byPrice-filter').attr('value'));
+    });
+
+    $('#item-select').change(function () {
+        let selectedText = $(this).find("option:selected").text();
+        alert(selectedText);
+        $('#itemid').attr('value', selectedText);
+        alert( $('#itemid').attr('value'));
     });
 
     $('#brand-select').change(function () {
@@ -177,19 +193,6 @@ function toDateTime(date, time){
     return (date + " " + time);
 }
 
-function to24time(format, time){
-    let hours = Number(time.match(/^(\d+)/)[1]);
-    let minutes = Number(time.match(/:(\d+)/)[1]);
-    let AMPM = time.match(/\s(.*)$/)[1];
-    if(AMPM === "PM" && hours<12) hours = hours+12;
-    if(AMPM === "AM" && hours===12) hours = hours-12;
-    let sHours = hours.toString();
-    let sMinutes = minutes.toString();
-    if(hours<10) sHours = "0" + sHours;
-    if(minutes<10) sMinutes = "0" + sMinutes;
-    return sHours + ":" + sMinutes + ":00";
-}
-
 // display urls of competitor in html table
 function displayUrls(urls){
     let table = document.getElementById("employee_table");
@@ -203,11 +206,11 @@ function displayUrls(urls){
         if(!url.active_item){
             r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
         }else if(!url.active){
-            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle\" ></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ban-circle\" ></button>";
         }else{
-            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"setActive tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
         }
-        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-pencil\" data-toggle=\"modal\" data-target=\"#editformModal\"></button>";
+        r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-pencil editUrlCompetitor\" data-toggle=\"modal\" data-target=\"#editformModal\" data-comp_id='"+url.competitor+"' data-item_id='"+url.item+"' data-url='"+url.url+"'> </button>";
         r += "<button class=\"tool-btn round-btn-sm glyphicon glyphicon-remove\" data-toggle=\"modal\" data-target=\"#deleteConfirmationModal\"></button></td></tr>";
 
         table.innerHTML += r;
@@ -306,13 +309,4 @@ function displayAnalysis(info){
     });
     $(".loading-msg").hide();
     table.innerHTML += data;
-}
-
-function isEmptyObject(obj) {
-    for (let key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            return false;
-        }
-    }
-    return true;
 }
