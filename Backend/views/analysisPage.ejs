@@ -30,11 +30,11 @@
                 <div class="modal-filter__main-section-item mobile-no-border-left">
                     <input type="hidden" id="byBrand" name="byBrand"/>
                     <h3 class="modal-filter__main-section-h">By brand:</h3>
-                    <div class="modal-filter-select-all" id="all">Select all brands</div>
-                    <div class="modal-filter-text-or">Or enter name of brand: </div>
+                    <div class="modal-filter-text-or">Select name of brand: </div>
                     <div class="form-group input">
                         <label for="brand-select">Select list:</label>
                         <select class="form-control" id="brand-select">
+                            <option>all</option>
                             <% brands.forEach( brand => { %>
                                 <option><%= brand%></option>
                             <% }) %>
@@ -44,11 +44,11 @@
                 <div class="modal-filter__main-section-item mobile-no-border-left">
                     <input type="hidden" id="byComp" name="byComp"/>
                     <h3 class="modal-filter__main-section-h">By competitors:</h3>
-                    <div class="modal-filter-select-all" id="all">Select all competitors</div>
-                    <div class="modal-filter-text-or">Or enter link of competitor: </div>
+                    <div class="modal-filter-text-or">Select link of competitor: </div>
                     <div class="form-group input">
                         <label for="competitor-select-filter">Select list:</label>
                         <select class="form-control" id="competitor-select-filter">
+                            <option>all</option>
                             <% competitors.forEach(competitor => { %>
                                 <option><%= competitor.site%></option>
                             <% }) %>

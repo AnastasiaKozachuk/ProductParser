@@ -88,25 +88,11 @@ $(document).ready(function(){
         alert( $('#byPrice-filter').attr('value'));
     });
 
-    $(".modal-filter-select-all").click(function () {
-        $(this).toggleClass("link-active");
-    });
-
     $('#brand-select').change(function () {
         let selectedText = $(this).find("option:selected").text();
         alert(selectedText);
         $('#byBrand').attr('value', selectedText);
         alert( $('#byBrand').attr('value'));
-    });
-
-    $('#allBrands').click(function(){
-        $('#byBrand').attr('value', ($(this).attr('id')));
-        alert( $('#byBrand').attr('value'));
-    });
-
-    $('#allComp').click(function(){
-        $('#byComp').attr('value', ($(this).attr('id')));
-        alert( $('#byComp').attr('value'));
     });
 
     $('#competitor-select-filter').change(function () {
