@@ -188,6 +188,7 @@ function configureEndpoints(app) {
             let u = {};
             let url_competitor = await Url.findOne({ _id: analysisObject.url });
             let site = "";
+            let url = url_competitor.url;
 
             let comp = await Competitor.findOne({ _id: url_competitor.competitor });
             if (comp === null || isEmptyObject(comp)) {
@@ -211,7 +212,9 @@ function configureEndpoints(app) {
             u.data.push(analysisObject.data);
             u.site = site;
             u[analysisObject.data] = {};
-            u[analysisObject.data][site] = analysisObject.price;
+            u[analysisObject.data][site] = {};
+            u[analysisObject.data][site].price = analysisObject.price;
+            u[analysisObject.data][site].url = url;
 
             result.push(u);
 
@@ -227,7 +230,7 @@ function configureEndpoints(app) {
             let analysisObject = analysisData[0];
             if (parametersMatching(analysisObject, parameters)) {
                 curr_id = analysisObject.id;
-                if(curr_id == "33725"){
+                if(curr_id === "33725"){
                     console.log(analysisObject);
                 }
                 analysisData.splice(0, 1);
@@ -236,16 +239,20 @@ function configureEndpoints(app) {
                     if (parametersMatching(analysisData[i], parameters)) {
                         let aData = analysisData[i].data[0];
                         let aSite = analysisData[i].site;
-                        if(analysisData[i].id == "33725"){
+                        if(analysisData[i].id === "33725"){
                             console.log(analysisData[i]);
                         }
                         if (curr_id === analysisData[i].id) {
                             if (analysisObject.data.includes(aData)) {
-                                analysisObject[aData][aSite] = analysisData[i][aData][aSite];
+                                analysisObject[aData][aSite] = {};
+                                analysisObject[aData][aSite].price = analysisData[i][aData][aSite].price;
+                                analysisObject[aData][aSite].url = analysisData[i][aData][aSite].url;
                             } else {
                                 analysisObject.data.push(aData);
                                 analysisObject[aData] = {};
-                                analysisObject[aData][aSite] = analysisData[i][aData][aSite];
+                                analysisObject[aData][aSite] = {};
+                                analysisObject[aData][aSite].price = analysisData[i][aData][aSite].price;
+                                analysisObject[aData][aSite].url = analysisData[i][aData][aSite].url;
                             }
                             analysisData.splice(i, 1);
                         } else {
@@ -272,31 +279,31 @@ function configureEndpoints(app) {
         let priceMatch = false;
         switch (parameters.priceEq) {
             case ">": {
-                if (parseInt(object[object.data][object.site], 10) > parseInt(object.defprice, 10)) {
+                if (parseInt(object[object.data][object.site].price, 10) > parseInt(object.defprice, 10)) {
                     priceMatch = true;
                 }
                 break;
             }
             case "<": {
-                if (parseInt(object[object.data][object.site], 10) < parseInt(object.defprice, 10)) {
+                if (parseInt(object[object.data][object.site].price, 10) < parseInt(object.defprice, 10)) {
                     priceMatch = true;
                 }
                 break;
             }
             case ">=": {
-                if (parseInt(object[object.data][object.site], 10) >= parseInt(object.defprice, 10)) {
+                if (parseInt(object[object.data][object.site].price, 10) >= parseInt(object.defprice, 10)) {
                     priceMatch = true;
                 }
                 break;
             }
             case "<=": {
-                if (parseInt(object[object.data][object.site], 10) <= parseInt(object.defprice, 10)) {
+                if (parseInt(object[object.data][object.site].price, 10) <= parseInt(object.defprice, 10)) {
                     priceMatch = true;
                 }
                 break;
             }
             case "===": {
-                if (parseInt(object[object.data][object.site], 10) === parseInt(object.defprice, 10)) {
+                if (parseInt(object[object.data][object.site].price, 10) === parseInt(object.defprice, 10)) {
                     priceMatch = true;
                 }
                 break;
@@ -309,15 +316,15 @@ function configureEndpoints(app) {
         if (parameters.site === "all") {
             siteMatch = true;
         } else {
-            if (object.site == parameters.site) {
+            if (object.site === parameters.site) {
                 siteMatch = true;
             }
         }
         let brandMatch = false;
-        if (parameters.brand == "all") {
+        if (parameters.brand === "all") {
             brandMatch = true;
         } else {
-            if (object.brand == parameters.brand) {
+            if (object.brand === parameters.brand) {
                 brandMatch = true;
             }
         }
@@ -325,11 +332,11 @@ function configureEndpoints(app) {
     }
 
     function dateMatchFrom(date, dateFrom) {
-        if (dateFrom == "all") {
+        if (dateFrom === "all") {
             return true;
         }
         let dateParseFrom = dateFrom.split(" ")[0];
-        let dateParse = date.split(" ")[0];
+        let dateParse = date[0].split(" ")[0];
         dateParse = dateParse.split("-")[1] + "-" + dateParse.split("-")[0] + "-" + dateParse.split("-")[2];
         dateParseFrom = dateParseFrom.split("-")[2] + "-" + dateParseFrom.split("-")[1] + "-" + dateParseFrom.split("-")[0];
         for (let i = 2; i >= 0; i--) {
@@ -339,7 +346,7 @@ function configureEndpoints(app) {
             }
         }
         let timeParseFrom = dateFrom.split(" ")[1];
-        let timeParse = date.split(" ")[1];
+        let timeParse = date[0].split(" ")[1];
         for (let i = 1; i >= 0; i--) {
             if (parseInt(timeParse.split(":")[i], 10) > parseInt(timeParseFrom.split(":")[i], 10)) return true;
             if (parseInt(timeParse.split(":")[i], 10) < parseInt(timeParseFrom.split(":")[i], 10)) {
@@ -350,11 +357,11 @@ function configureEndpoints(app) {
     }
 
     function dateMatchTo(date, dateTo) {
-        if (dateTo == "all") {
+        if (dateTo === "all") {
             return true;
         }
         let dateParseTo = dateTo.split(" ")[0];
-        let dateParse = date.split(" ")[0];
+        let dateParse = date[0].split(" ")[0];
         dateParse = dateParse.split("-")[1] + "-" + dateParse.split("-")[0] + "-" + dateParse.split("-")[2];
         dateParseTo = dateParseTo.split("-")[2] + "-" + dateParseTo.split("-")[1] + "-" + dateParseTo.split("-")[0];
         for (let i = 2; i >= 0; i--) {
@@ -364,7 +371,7 @@ function configureEndpoints(app) {
             }
         }
         let timeParseTo = dateTo.split(" ")[1];
-        let timeParse = date.split(" ")[1];
+        let timeParse = date[0].split(" ")[1];
         for (let i = 1; i >= 0; i--) {
             if (parseInt(timeParse.split(":")[i], 10) < parseInt(timeParseTo.split(":")[i], 10)) return true;
             if (parseInt(timeParse.split(":")[i], 10) > parseInt(timeParseTo.split(":")[i], 10)) {

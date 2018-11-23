@@ -196,22 +196,10 @@ function displayUrls(urls){
     table.innerHTML = getUrlTableHeader();
     urls.forEach(url => {
         let r = "<tr>";
-        if(!url.active_item) {
-            r += "<td style=\"background-color: #a8a8a8\">"+url.id+"</td>";
-            r += "<td style=\"background-color: #a8a8a8\">"+url.vendorCode+"</td>";
-            r += "<td style=\"background-color: #a8a8a8\">"+url.name+"</td>";
-            r += "<td style=\"background-color: #a8a8a8\"><a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>";
-        }else if(!url.active){
-            r += "<td style=\"background-color: #a8a8a8\">"+url.id+"</td>";
-            r += "<td style=\"background-color: #a8a8a8\">"+url.vendorCode+"</td>";
-            r += "<td style=\"background-color: #a8a8a8\">"+url.name+"</td>";
-            r += "<td style=\"background-color: #a8a8a8\"><a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>";
-        }else{
-            r += "<td>" + url.id + "</td>";
-            r += "<td>" + url.vendorCode + "</td>";
-            r += "<td>" + url.name + "</td>";
-            r += "<td><a href='" + url.url + "' target='_blank'>" + url.url + "</a></td>";
-        }
+        r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+url.id+"</td>";
+        r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+url.vendorCode+"</td>";
+        r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+url.name+"</td>";
+        r += (!url.active_item || url.url === "")?("<td style='background-color: #a8a8a8;'> <a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>"):("<td style='background-color: #feffb4;'><a href='"+url.url+"' target='_blank'>" + url.url + "</a></td>");
         if(!url.active_item){
             r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
         }else if(!url.active){
@@ -287,29 +275,29 @@ function displayAnalysis(info){
         for(let d of dates){
             if(i.hasOwnProperty(d)){
                 for(let c of comp_set){
-                    if(Object.keys(i[d]).includes(c) && i[d][c] === ""){
-                        data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
+                    if(Object.keys(i[d]).includes(c) && i[d][c].price === ""){
+                        data += "<td data-toggle='tooltip' data-placement='top' title='Item Id: " +i.id+ "\nItem Name: "+i.name+ "\nItem Price: "+i.defprice+"\nCompetitor: "+ c + "\nDate: " + d + "' style='background-color: #a8a8a8; border-color: white'>No Price<a href='"+i[d][c].url+"' target='_blank'>\n" + "<span class='glyphicon glyphicon-link'></span></a></td>";
                     }
                     else if(Object.keys(i[d]).includes(c)){
-                        if(Number((i[d][c]).replace(/\s/g, '')) > Number((i.defprice).replace(/\s/g, ''))){
-                            data += "<td style='background-color: #a5d57d; border-color: white'>"+i[d][c]+"</td>";
+                        if(Number((i[d][c].price).replace(/\s/g, '')) > Number((i.defprice).replace(/\s/g, ''))){
+                            data += "<td data-toggle='tooltip' data-placement='top' title='Item Id: " +i.id+ "\nItem Name: "+i.name+ "\nItem Price: "+i.defprice+"\nCompetitor: "+ c + "\nDate: " + d + "' style='background-color: #a5d57d; border-color: white'>"+i[d][c].price+" <a href='"+i[d][c].url+"' target='_blank'><span class='glyphicon glyphicon-link'></span></a></td>";
                         }
-                        else if(Number((i[d][c]).replace(/\s/g, '')) < Number((i.defprice).replace(/\s/g, ''))){
-                            data += "<td style='background-color: #ff8d55; border-color: white'>"+i[d][c]+"</td>";
+                        else if(Number((i[d][c].price).replace(/\s/g, '')) < Number((i.defprice).replace(/\s/g, ''))){
+                            data += "<td data-toggle='tooltip' data-placement='top' title='Item Id: " +i.id+ "\nItem Name: "+i.name+ "\nItem Price: "+i.defprice+"\nCompetitor: "+ c + "\nDate: " + d + "' style='background-color: #ff8d55; border-color: white'>"+i[d][c].price+" <a href='"+i[d][c].url+"' target='_blank'><span class='glyphicon glyphicon-link'></span></a></td>";
                         }
                         else{
-                            data += "<td style='background-color: #feffb4; border-color: white'>"+i[d][c]+"</td>";
+                            data += "<td data-toggle='tooltip' data-placement='top' title='Item Id: " +i.id+ "\nItem Name: "+i.name+ "\nItem Price: "+i.defprice+"\nCompetitor: "+ c + "\nDate: " + d + "' style='background-color: #feffb4; border-color: white'>"+i[d][c].price+" <a href='"+i[d][c].url+"' target='_blank'><span class='glyphicon glyphicon-link'></span></a></td>";
                         }
 
                     }
                     else{
-                        data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
+                        data += "<td data-toggle='tooltip' data-placement='top' title='Item Id: " +i.id+ "\nItem Name: "+i.name+ "\nItem Price: "+i.defprice+"\nCompetitor: "+ c + "\nDate: " + d + "' style='background-color: #a8a8a8; border-color: white'></td>";
                     }
                 }
             }
             else{
                 for(let c of comp_set){
-                    data += "<td style='background-color: #a8a8a8; border-color: white'></td>";
+                    data += "<td data-toggle='tooltip' data-placement='top' title='Item Id: " +i.id+ "\nItem Name: "+i.name+ "\nItem Price: "+i.defprice+"\nCompetitor: "+ c + "\nDate: " + d + "' style='background-color: #a8a8a8; border-color: white'></td>";
                 }
             }
         }
