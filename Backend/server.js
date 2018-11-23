@@ -383,8 +383,12 @@ function configureEndpoints(app) {
             Url.find({competitor: req.body._id, active:true}, function (err, docs) {
                 if (err) throw err;
 
+                var date = new Date;
+
+                var time = date.getHours() + ":" + date.getMinutes();
+
                 for (var i in docs) {
-                   parseUrl(docs[i]);
+                   parseUrl(docs[i], time);
                 }
 
             }).then(function () {
@@ -395,18 +399,18 @@ function configureEndpoints(app) {
         });
 
 
-        function parseUrl(url) {
+        function parseUrl(url, time) {
 
             var correctUrl = url.url.includes("http:") ? url.url.replace("http", "https") : url.url;
 
             if (url.url.includes("officeman.ua")) {
-                officeman.parse(correctUrl, url);
+                officeman.parse(correctUrl, url, time);
             } else if (url.url.includes("a-techno.com")) {
-                aTechno.parse(correctUrl, url);
+                aTechno.parse(correctUrl, url, time);
             } else if (url.url.includes("nobu.com.ua")) {
-                nobu.parse(correctUrl, url);
+                nobu.parse(correctUrl, url, time);
             } else if (url.url.includes("mobilluck.com")) {
-                mobilluk.parse(correctUrl, url);
+                mobilluk.parse(correctUrl, url, time);
             }
 
         }
@@ -417,8 +421,12 @@ function configureEndpoints(app) {
             Url.find({active: true}, function (err, docs) {
                 if (err) throw err;
 
+                var date = new Date;
+
+                var time = date.getHours() + ":" + date.getMinutes();
+
                 for (var i in docs) {
-                    parseUrl(docs[i]);
+                    parseUrl(docs[i], time);
                 }
 
             }).then(function () {

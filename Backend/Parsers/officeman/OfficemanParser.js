@@ -8,7 +8,7 @@ const Analis = Analises_Model.analysis_model;
 var exports = module.exports = {};
 
 
-exports.parse =function (url, urlObject) {
+exports.parse =function (url, urlObject, time) {
 
 
      https.get(url, (res) => {
@@ -16,20 +16,19 @@ exports.parse =function (url, urlObject) {
                 if (!err) {
                     const $ = cheerio.load(body, {decodeEntities: false});
                     var price = $('meta[itemprop=price]').attr("content");
-                    console.log(url);
-
+                    price = price.replace(/ /g, '');
                     var date = new Date;
 
                     let newData = Analis({
                         _id: new mongoose.Types.ObjectId(),
                         url: urlObject,
                         price: price,
-                        data: date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes()
+                        data: date.getDay() + "-" + (date.getMonth()+1) + "-" + date.getFullYear() + " " + time
                     });
 
                     newData.save(function (err) {
                         if (err) throw err;
-                        console.log('Analyse created!');
+                       console.log('Analyse created!');
                     });
 
                 }
