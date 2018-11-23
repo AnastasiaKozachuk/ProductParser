@@ -207,7 +207,8 @@ function configureEndpoints(app) {
                 u.defprice = item.price;
             }
 
-            u.data = analysisObject.data;
+            u.data = [];
+            u.data.push(analysisObject.data);
             u.site = site;
             u[analysisObject.data] = {};
             u[analysisObject.data][site] = analysisObject.price;
@@ -226,16 +227,23 @@ function configureEndpoints(app) {
             let analysisObject = analysisData[0];
             if (parametersMatching(analysisObject, parameters)) {
                 curr_id = analysisObject.id;
+                if(curr_id == "33725"){
+                    console.log(analysisObject);
+                }
                 analysisData.splice(0, 1);
                 let i = 0;
                 while (i < analysisData.length) {
                     if (parametersMatching(analysisData[i], parameters)) {
-                        let aData = analysisData[i].data;
+                        let aData = analysisData[i].data[0];
                         let aSite = analysisData[i].site;
+                        if(analysisData[i].id == "33725"){
+                            console.log(analysisData[i]);
+                        }
                         if (curr_id === analysisData[i].id) {
-                            if (analysisObject.data === aData) {
+                            if (analysisObject.data.includes(aData)) {
                                 analysisObject[aData][aSite] = analysisData[i][aData][aSite];
                             } else {
+                                analysisObject.data.push(aData);
                                 analysisObject[aData] = {};
                                 analysisObject[aData][aSite] = analysisData[i][aData][aSite];
                             }
