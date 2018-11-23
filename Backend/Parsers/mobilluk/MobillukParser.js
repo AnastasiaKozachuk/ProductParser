@@ -7,7 +7,7 @@ const Analis = Analises_Model.analysis_model;
 
 var exports = module.exports = {};
 
-exports.parse = function (url, urlObject) {
+exports.parse = function (url, urlObject, time) {
 
     https.get(url, (res) => {
         res.pipe(iconv.decodeStream("win1251")).collect((err, body) => {
@@ -15,16 +15,13 @@ exports.parse = function (url, urlObject) {
                 const $ = cheerio.load(body, {decodeEntities: false});
                 var price = $('div[class=buy_block] span[class=cost]').text();
                 price = price.replace(/ /g, '');
-                console.log(url);
-                resPrice = price;
-
                 var date = new Date;
 
                 let newData = Analis({
                     _id: new mongoose.Types.ObjectId(),
                     url: urlObject,
                     price: price,
-                    data: date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes()
+                    data: date.getDate() + "-" + (date.getMonth()+1) + "-" + date.getFullYear() + " " + time
                 });
 
                 newData.save(function (err) {
@@ -37,4 +34,4 @@ exports.parse = function (url, urlObject) {
         })
     }).on('error', () => console.log('errored'));
 
-}
+};
