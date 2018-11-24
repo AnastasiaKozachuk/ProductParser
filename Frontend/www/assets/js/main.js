@@ -82,6 +82,10 @@ $(document).ready(function(){
     $(".submit-button").click(function(){
         let table = document.getElementById("employee_table");
         table.innerHTML = "";
+        /*let date = new Date($('#dateFrom').val());
+        let day = date.getDate();
+        let month = date.getMonth() + 1;
+        let year = date.getFullYear();*/
         $(".loading-msg").show();
         getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').val(),$('#timeFrom').val(),$('#dateTill').val(), $('#timeTill').val());
     });
@@ -94,27 +98,21 @@ $(document).ready(function(){
         $(this).addClass("link-active");
         prev=$(this);
         $('#byPrice-filter').attr('value', ($(this).attr('id')));
-        alert( $('#byPrice-filter').attr('value'));
     });
 
     $('#item-select').change(function () {
         let selectedText = $(this).find("option:selected").text();
-        alert(selectedText);
         $('#itemid').attr('value', selectedText);
-        alert( $('#itemid').attr('value'));
     });
 
     $('#brand-select').change(function () {
         let selectedText = $(this).find("option:selected").text();
-        alert(selectedText);
         $('#byBrand').attr('value', selectedText);
-        alert( $('#byBrand').attr('value'));
     });
 
     $('#competitor-select-filter').change(function () {
         let selectedText = $(this).find("option:selected").text();
         $('#byComp').attr('value', selectedText);
-        alert( $('#byComp').attr('value'));
     });
 
 });
@@ -204,9 +202,9 @@ function displayUrls(urls){
         r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>"+url.name+"</td>";
         r += (!url.active_item || url.url === "")?("<td style='background-color: #a8a8a8;'> <a href='"+url.url+"' target='_blank'>"+url.url+"</a></td>"):("<td style='background-color: #feffb4;'><a href='"+url.url+"' target='_blank'>" + url.url + "</a></td>");
         if(!url.active_item){
-            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled disabled-hover glyphicon glyphicon-ban-circle\" disabled></button>";
         }else if(!url.active){
-            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm glyphicon glyphicon-ban-circle\" ></button>";
+            r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"tool-btn round-btn-sm disabled glyphicon glyphicon-ban-circle\" ></button>";
         }else{
             r += "<td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><button class=\"setActive tool-btn round-btn-sm glyphicon glyphicon-ok\" ></button>";
         }
