@@ -206,7 +206,7 @@ function configureEndpointsAnalysis(app) {
         }
         let timeParseFrom = dateFrom.split(" ")[1];
         let timeParse = date[0].split(" ")[1];
-        for (let i = 1; i >= 0; i--) {
+        for (let i = 0; i <= 1; i++) {
             if (parseInt(timeParse.split(":")[i], 10) > parseInt(timeParseFrom.split(":")[i], 10)) return true;
             if (parseInt(timeParse.split(":")[i], 10) < parseInt(timeParseFrom.split(":")[i], 10)) {
                 return false;
@@ -231,7 +231,7 @@ function configureEndpointsAnalysis(app) {
         }
         let timeParseTo = dateTo.split(" ")[1];
         let timeParse = date[0].split(" ")[1];
-        for (let i = 1; i >= 0; i--) {
+        for (let i = 0; i <= 1; i++) {
             if (parseInt(timeParse.split(":")[i], 10) < parseInt(timeParseTo.split(":")[i], 10)) return true;
             if (parseInt(timeParse.split(":")[i], 10) > parseInt(timeParseTo.split(":")[i], 10)) {
                 return false;

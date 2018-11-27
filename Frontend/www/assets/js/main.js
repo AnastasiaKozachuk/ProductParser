@@ -99,6 +99,38 @@ $(document).ready(function(){
         getAnalysis($('#byPrice-filter').attr('value'),$('#byBrand').attr('value'),$('#byComp').attr('value'),$('#dateFrom').val(),$('#timeFrom').val(),$('#dateTill').val(), $('#timeTill').val());
     });
 
+    //export to Excel
+    $(".download-button").click(function(){
+    var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+    tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+    tab_text = tab_text + '<x:Name>Test Sheet</x:Name>';
+    tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+    tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+    tab_text = tab_text + "<table border='1px'>";
+    
+   //get table HTML code
+
+    tab_text = tab_text + $('#employee_table').html();
+    tab_text = tab_text + '</table></body></html>';
+
+    var data_type = 'data:application/vnd.ms-excel';
+    
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+    //For IE
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+         if (window.navigator.msSaveBlob) {
+         var blob = new Blob([tab_text], {type: "application/csv;charset=utf-8;"});
+         navigator.msSaveBlob(blob, 'Analysis.xls');
+         }
+    } 
+   //for Chrome and Firefox 
+   else {
+    $(".download-button").attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+    $(".download-button").attr('download', 'Analysis.xls');
+   }
+});
+
     //filter modal window
 
     let prev = $(".link-active");
