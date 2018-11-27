@@ -15,17 +15,17 @@
             <% items.forEach(item => { %>
             <tr>
                 <% if( item.active ){ %>
-                    <td style='background-color: #feffb4'><%= item.id %></td>
-                    <td style='background-color: #feffb4'><%= item.vendorCode %></td>
-                    <td style='background-color: #feffb4'><%= item.name %></td>
-                    <td style='background-color: #feffb4'><%= item.brand %></td>
-                    <td style='background-color: #feffb4'><%= item.price %></td>
+                    <td class="comp-url-active-td"><%= item.id %></td>
+                    <td class="comp-url-active-td"><%= item.vendorCode %></td>
+                    <td class="comp-url-active-td"><%= item.name %></td>
+                    <td class="comp-url-active-td"><%= item.brand %></td>
+                    <td class="comp-url-active-td"><%= item.price %></td>
                 <% } else{ %>
-                    <td style="background-color: #a8a8a8"><%= item.id %></td>
-                    <td style="background-color: #a8a8a8"><%= item.vendorCode %></td>
-                    <td style="background-color: #a8a8a8"><%= item.name %></td>
-                    <td style="background-color: #a8a8a8"><%= item.brand %></td>
-                    <td style="background-color: #a8a8a8"><%= item.price %></td>
+                    <td class="comp-url-nactive-td"><%= item.id %></td>
+                    <td class="comp-url-nactive-td"><%= item.vendorCode %></td>
+                    <td class="comp-url-nactive-td"><%= item.name %></td>
+                    <td class="comp-url-nactive-td"><%= item.brand %></td>
+                    <td class="comp-url-nactive-td"><%= item.price %></td>
                 <% } %>
                 <td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>
                     <div style="display: inline-block">
@@ -36,7 +36,7 @@
                     </div>
                     <div style="display: inline-block">
                         <form method="post" action="/active-disable">
-                            <input type="hidden" name="id" value="<%= item.id %>"/>
+                            <input type="hidden" name="_id" value="<%= item._id %>"/>
                             <input type="hidden" name="active" value="<%= item.active %>"/>
                             <% if( item.active ){ %>
                                 <button data-toggle="tooltip" data-placement="top" title="Exclude from parsing"  class="setActive tool-btn round-btn-sm glyphicon glyphicon-ok withTooltip" type="submit"></button>
@@ -54,7 +54,7 @@
                     </button>
                     </span>
                     <span data-toggle="tooltip"   data-placement="top" title="Delete item" class="withTooltip">
-                        <button class="withTooltip delete-item tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal" data-itemid="<%= item.id %>"></button>
+                        <button class="withTooltip delete-item-items tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal" data-itemid="<%= item.id %>"></button>
                     </span>
                     </td>
             </tr>
@@ -91,15 +91,15 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="itemid">Item id: </label>
-                        <input type="text" class="form-control" name="id" id="itemid"/>
+                        <input type="text" class="form-control" name="id" id="itemid" required/>
                         <label for="itemart">Item Article: </label>
-                        <input type="text" class="form-control" name="vendorCode" id="itemart"/>
+                        <input type="text" class="form-control" name="vendorCode" id="itemart" required/>
                         <label for="itemname">Item name: </label>
-                        <input type="text" class="form-control" name="name" id="itemname"/>
+                        <input type="text" class="form-control" name="name" id="itemname" required/>
                         <label for="itembrand">Item brand: </label>
-                        <input type="text" class="form-control" name="brand" id="itembrand"/>
+                        <input type="text" class="form-control" name="brand" id="itembrand" required/>
                         <label for="itemprice">Item price: </label>
-                        <input type="text" class="form-control" name="price" id="itemprice"/>
+                        <input type="text" class="form-control" name="price" id="itemprice" required/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -123,11 +123,11 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="edit-form-name">Item name: </label>
-                        <input type="text" class="form-control" name="name" id="edit-form-name"/>
+                        <input type="text" class="form-control" name="name" id="edit-form-name" required/>
                         <label for="edit-form-brand">Item brand: </label>
-                        <input type="text" class="form-control" name="brand" id="edit-form-brand"/>
+                        <input type="text" class="form-control" name="brand" id="edit-form-brand" required/>
                         <label for="edit-form-price">Item price: </label>
-                        <input type="text" class="form-control" name="price" id="edit-form-price"/>
+                        <input type="text" class="form-control" name="price" id="edit-form-price" required/>
                     </div>
                 </div>
                 <div class="modal-footer">

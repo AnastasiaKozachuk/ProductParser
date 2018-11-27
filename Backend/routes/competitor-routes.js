@@ -15,13 +15,12 @@ function configureEndpointsComp(app) {
     -----------------------------------------------------------*/
     app.get('/competitors', async function (req, res) {
         //window.location.reload();
-        let items_doc = await Item.find({});
-        Competitor.find({}, function (err, results) {
-            res.render('competitorsPage', {
-                pageTitle: 'My Competitors',
-                competitors: results,
-                items: items_doc
-            });
+        let all_items = await Item.find({});
+        let all_comp = await Competitor.find({});
+        res.render('competitorsPage', {
+            pageTitle: 'My Competitors',
+            competitors: all_comp,
+            items: all_items
         });
     });
 
@@ -30,14 +29,19 @@ function configureEndpointsComp(app) {
     -----------------------------------------------------------*/
 
     app.post('/addcompitemurl', async function(req, res){
-        let item = await Item.findOne({ id: req.body.id });
-        let comp = await Competitor.findOne({ site: req.body.site });
+        let item = await Item.findOne({ id: (req.body.id).trim() });
+        let comp = await Competitor.findOne({ site: (req.body.site).trim() });
+        let item_id = item._id;
+        let comp_id = comp._id;
+        console.log(item_id);
+        console.log(comp_id);
         Url.findOne({url: req.body.url}, function(err, urls){
+            console.log(urls);
             if ( urls === null || isEmptyObject(urls)) {
                 let newUrl = Url({
-                    item: item._id,
-                    competitor: comp._id,
-                    url: urls.url,
+                    item: item_id,
+                    competitor: comp_id,
+                    url: req.body.url,
                     active: item.active
                 });
                 // save the Url
@@ -111,6 +115,8 @@ function configureEndpointsComp(app) {
             u.id = i.id;
             u.name = i.name;
             u.vendorCode = i.vendorCode;
+            u.item = i._id;
+            u.competitor = req.body._id;
 
             let urls_comp = await Url.findOne({ competitor: req.body._id, item: i._id });
             if (urls_comp === null || isEmptyObject(urls_comp)) {
@@ -149,21 +155,39 @@ function configureEndpointsComp(app) {
         res.redirect('/competitors');
     });
 
-    app.post('/editUrlCompetitor', function (req, res) {
+    app.post('/editUrlCompetitor', async function (req, res) {
         console.log(req.body.url);
-        Url.updateOne(
-            { url: req.body.url },
-            {
-                $set:
-                    {
-                        url: req.body.url
-                    }
-            }, function (err, res) {
+        console.log(req.body.competitor);
+        console.log(req.body.item);
+        let found = await Url.find({item: req.body.item, competitor: req.body.competitor});
+        if(found === null || isEmptyObject(found)){
+            let newUrl = Url({
+                competitor: req.body.competitor,
+                item: req.body.item,
+                url: req.body.url,
+                active: req.body.active
+            });
+            // save the Competitor
+            newUrl.save(function (err) {
                 if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
+                console.log('Url created!');
+            });
+        }else{
+            Url.updateOne(
+                { item: req.body.item, competitor: req.body.competitor},
+                {
+                    $set:
+                        {
+                            url: req.body.url
+                        }
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("1 document updated");
+                    console.log(res);
+                }
+            );
+        }
+
         res.redirect('/competitors');
     });
 
@@ -238,6 +262,18 @@ function configureEndpointsComp(app) {
                 res.redirect('/competitors');
             }
         });
+    });
+
+    app.post('/deletecompetitorurl', function (req, res) {
+        Url.deleteOne({ url: req.body.url}, function (err) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log('success');
+                    res.redirect('/competitors');
+                }
+            }
+        );
     });
 
 }

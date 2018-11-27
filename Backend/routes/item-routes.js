@@ -31,22 +31,32 @@ function configureEndpointsItem(app) {
     /*-----------------------------------------------------------
     |||||||||||||||||||||||||| POST |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
-    app.post('/active-disable', function (req, res) {
+    app.post('/active-disable', async function (req, res) {
         let value_bool = (req.body.active !== 'true');
-
-        Item.updateOne(
-            { id: req.body.id },
+        let all_Urls = await Url.find({});
+        console.log(all_Urls);
+        let item_updated = await Item.updateOne(
+            { _id: req.body._id },
             {
                 $set:
                     {
                         active: value_bool
                     }
-            }, function (err, res) {
-                if (err) throw err;
-                console.log("1 document updated");
-                console.log(res);
-            }
-        );
+            });
+        console.log(item_updated);
+
+        for(let u of all_Urls){
+           Url.updateOne(
+               { item: req.body._id },
+               {
+                   $set:
+                       {
+                           active: value_bool
+                       }
+               });
+           }
+
+
         res.redirect('/items');
     });
     app.post('/item', async function (req, res) {
@@ -57,6 +67,7 @@ function configureEndpointsItem(app) {
             let u = {};
             u.comp_name = i.comp_name;
             u.site = i.site;
+            u._id = i._id;
 
             let urls_item = await Url.findOne({ item: req.body._id, competitor: i._id });
             if (urls_item === null || isEmptyObject(urls_item)) {
@@ -146,14 +157,16 @@ function configureEndpointsItem(app) {
         res.redirect('/items');
     });
 
-    app.post('/editUrlItem', function (req, res) {
+    app.post('/editOneitem', async function (req, res) {
         console.log(req.body.id);
-        Url.updateOne(
-            { url: req.body.url },
+        Item.updateOne(
+            { id: req.body.id },
             {
                 $set:
                     {
-                        url: req.body.url
+                        name: req.body.name,
+                        brand: req.body.brand,
+                        price: req.body.price
                     }
             }, function (err, res) {
                 if (err) throw err;
@@ -161,8 +174,90 @@ function configureEndpointsItem(app) {
                 console.log(res);
             }
         );
-        res.redirect('/item, req.body.id');
+        let item_info = await Item.findOne({ id: req.body.id });
+        let all_competitors = await Competitor.find({});
+        let results = [];
+        for (let i of all_competitors) {
+            let u = {};
+            u.comp_name = i.comp_name;
+            u.site = i.site;
+            u._id = i._id;
+
+            let urls_item = await Url.findOne({ item: item_info._id, competitor: i._id });
+            if (urls_item === null || isEmptyObject(urls_item)) {
+                u.url = "";
+            } else {
+                u.url = urls_item.url;
+            }
+            console.log(u);
+            results.push(u);
+
+        }
+        res.render('viewItemPage', {
+            pageTitle: 'My Item Competitors',
+            competitors: results,
+            item: item_info
+        });
     });
+
+    app.post('/editUrlItem', async function (req, res) {
+            console.log(req.body.url);
+            console.log(req.body.competitor);
+            console.log(req.body.item);
+            let found = await Url.find({item: req.body.item, competitor: req.body.competitor});
+            if(found === null || isEmptyObject(found)){
+                let newUrl = Url({
+                    competitor: req.body.competitor,
+                    item: req.body.item,
+                    url: req.body.url,
+                    active: req.body.active
+                });
+                // save the Competitor
+                newUrl.save(function (err) {
+                    if (err) throw err;
+                    console.log('Url created!');
+                });
+            }else{
+                Url.updateOne(
+                    { item: req.body.item, competitor: req.body.competitor},
+                    {
+                        $set:
+                            {
+                                url: req.body.url
+                            }
+                    }, function (err, res) {
+                        if (err) throw err;
+                        console.log("1 document updated");
+                        console.log(res);
+                    }
+                );
+            }
+
+        let item_info = await Item.findOne({ _id: req.body.item });
+        let all_competitors = await Competitor.find({});
+        let results = [];
+        for (let i of all_competitors) {
+            let u = {};
+            u.comp_name = i.comp_name;
+            u.site = i.site;
+            u._id = i._id;
+            let urls_item = await Url.findOne({ item: req.body.item, competitor: i._id });
+            if (urls_item === null || isEmptyObject(urls_item)) {
+                u.url = "";
+            } else {
+                u.url = urls_item.url;
+            }
+            console.log(u);
+            results.push(u);
+
+        }
+
+            res.render('viewItemPage', {
+                pageTitle: 'My Item Competitors',
+                competitors: results,
+                item: item_info
+            });
+        });
 
     /*-----------------------------------------------------------
     |||||||||||||||||||||||| DELETE |||||||||||||||||||||||||||||
@@ -178,6 +273,41 @@ function configureEndpointsItem(app) {
                 }
             }
         );
+    });
+
+    app.post('/deleteitemurl', async function (req, res) {
+        Url.deleteOne({ url: req.body.url }, function (err) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log('success');
+                }
+            }
+        );
+        let item_info = await Item.findOne({ _id: req.body._id });
+        let all_competitors = await Competitor.find({});
+        let results = [];
+        for (let i of all_competitors) {
+            let u = {};
+            u.comp_name = i.comp_name;
+            u.site = i.site;
+            u._id = i._id;
+
+            let urls_item = await Url.findOne({ item: req.body._id, competitor: i._id });
+            if (urls_item === null || isEmptyObject(urls_item)) {
+                u.url = "";
+            } else {
+                u.url = urls_item.url;
+            }
+            console.log(u);
+            results.push(u);
+
+        }
+        res.render('viewItemPage', {
+            pageTitle: 'My Item Competitors',
+            competitors: results,
+            item: item_info
+        });
     });
 
     app.delete('/deleteAllItems', function (req, res) {

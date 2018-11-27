@@ -20,8 +20,8 @@
                 <td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'><%=competitor.site%></td>
                 <td style='background-color: #feffb4'><a href="<%=competitor.url%>" target="_blank"><%=competitor.url%></a></td>
                 <td style='color: white; background-color: #5D5D5D; border-color: #a8a8a8'>
-                    <button class="tool-btn round-btn-sm glyphicon glyphicon-pencil" data-toggle="modal" data-target="#editformModal"></button>
-                    <button class="tool-btn round-btn-sm glyphicon glyphicon-remove" data-toggle="modal" data-target="#deleteConfirmationModal"></button>
+                    <button class="tool-btn round-btn-sm glyphicon glyphicon-pencil editItemUrl" data-toggle="modal" data-target="#editformModal" data-url="<%=competitor.url%>" data-competitor="<%=competitor._id%>"></button>
+                    <button class="tool-btn round-btn-sm glyphicon glyphicon-remove deleteItemUrl" data-toggle="modal" data-target="#deleteUrlConfirmationModal" data-url="<%=competitor.url%>"></button>
                 </td>
             </tr>
             <% }) %>
@@ -46,9 +46,10 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="editUrl">Url: </label>
-                        <input type="text" class="form-control" name="url" id="editUrl"/>
-                        <input type="hidden" class="form-control" name="comp_id" id="comp_id"/>
-                        <input type="hidden" class="form-control" name="item_id" id="item_id"/>
+                        <input type="text" class="form-control" name="url" id="editUrl" required/>
+                        <input type="hidden" class="form-control" name="competitor" id="comp_id"/>
+                        <input type="hidden" class="form-control" name="item" id="item_id" value="<%= item._id %>"/>
+                        <input type="hidden" class="form-control" name="active" id="activeI" value="<%= item.active %>"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -63,8 +64,8 @@
 <div class="modal fade" id="editItemformModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="post" action="/edititem">
-                <input type="hidden" id="edit-form-itemid" name="id" />
+            <form method="post" action="/editOneitem">
+                <input type="hidden" id="edit-form-itemid" name="id" value="<%= item.id%>"/>
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myEditModalLabel">Edit Item</h4>
@@ -72,11 +73,11 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="edit-form-name">Item name: </label>
-                        <input type="text" class="form-control" name="name" id="edit-form-name"/>
+                        <input type="text" class="form-control" name="name" id="edit-form-name" value="<%= item.name%>" required/>
                         <label for="edit-form-brand">Item brand: </label>
-                        <input type="text" class="form-control" name="brand" id="edit-form-brand"/>
+                        <input type="text" class="form-control" name="brand" id="edit-form-brand" value="<%= item.brand%>" required/>
                         <label for="edit-form-price">Item price: </label>
-                        <input type="text" class="form-control" name="price" id="edit-form-price"/>
+                        <input type="text" class="form-control" name="price" id="edit-form-price" value="<%= item.price%>" required/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -93,7 +94,29 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="post" action="/deleteitem">
-                <input type="hidden" id="delete-form-itemid" name="id" />
+                <input type="hidden" id="delete-form-itemid" name="id" value="<%= item.id %>"/>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myDeleteLabel">Delete selected item?</h4>
+                </div>
+                <div class="modal-body">
+                    <h1 class="label label-warning">This action cannot be undone!</h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Delete"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteUrlConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/deleteitemurl">
+                <input type="hidden" id="delete-url" name="url" />
+                <input type="hidden" id="delete-id" name="_id" value="<%= item._id %>"/>
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myDeleteLabel">Delete selected item?</h4>
@@ -131,14 +154,10 @@
 </div>
 <div class="side-panel-tools-competitor">
     <div class="button-tools-competitor-container">
-        <button class="delete-item delete-competitor-btn round-btn"  data-toggle="modal" data-target="#deleteConfirmationModal" data-itemid="<%= item.id %>">
+        <button class="delete-item delete-competitor-btn round-btn"  data-toggle="modal" data-target="#deleteConfirmationModal">
             <span class="glyphicon glyphicon-remove"></span>
         </button>
-        <button class="edit-item edit-competitor-btn round-btn" data-toggle="modal" data-target="#editItemformModal"
-                data-id="<%= item.id %>"
-                data-name="<%= item.name %>"
-                data-brand="<%= item.brand %>"
-                data-price="<%= item.price %>">
+        <button class="edit-item edit-competitor-btn round-btn" data-toggle="modal" data-target="#editItemformModal">
             <span class="glyphicon glyphicon-pencil"></span>
         </button>
         <a href="#">

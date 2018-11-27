@@ -3,13 +3,13 @@
 <div class="container-center">
     <div class="competitors-table-container">
         <table style="width:100%" id="employee_table">
-                <tr id="myHeader">
-                    <th>Id</th>
-                    <th>Article</th>
-                    <th>Name</th>
-                    <th>URL</th>
-                    <th>Tools</th>
-                </tr>
+            <tr id="myHeader">
+                <th>Id</th>
+                <th>Article</th>
+                <th>Name</th>
+                <th>URL</th>
+                <th>Tools</th>
+            </tr>
         </table>
     </div>
     <br>
@@ -24,21 +24,23 @@
             <form method="post" action="/addcompitemurl">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Add New Item</h4>
+                    <h4 class="modal-title" id="myModalLabel">Add New Url</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="form-group input">
                             <label for="item-select">Select item id: </label>
                             <select class="form-control" id="item-select">
+                                <option>None chosen</option>
                                 <% items.forEach( item => { %>
                                     <option><%= item.id%></option>
                                 <% }) %>
                             </select>
                         </div>
                         <input type="hidden" class="form-control" name="id" id="itemid"/>
-                        <label for="website-add-url">Website: </label>
-                        <input type="text" class="form-control" name="site" id="website-add-url" disabled/>
+                        <label for="website-add-url-show">Website: </label>
+                        <input type="text" class="form-control" name="site" id="website-add-url-show" disabled/>
+                        <input type="hidden" class="form-control" name="site" id="website-add-url"/>
                         <label for="url">Url: </label>
                         <input type="text" class="form-control" name="url" id="url" required/>
                     </div>
@@ -89,9 +91,10 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="editUrl">Url: </label>
-                        <input type="text" class="form-control" name="url" id="editUrl"/>
-                        <input type="hidden" class="form-control" name="comp_id" id="comp_id"/>
-                        <input type="hidden" class="form-control" name="item_id" id="item_id"/>
+                        <input type="text" class="form-control" name="url" id="editUrl" required/>
+                        <input type="hidden" class="form-control" name="competitor" id="comp_id"/>
+                        <input type="hidden" class="form-control" name="item" id="item_id"/>
+                        <input type="hidden" class="form-control" name="active" id="active-item-url"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -159,6 +162,28 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myDeleteLabel">Delete selected competitor?</h4>
+                </div>
+                <div class="modal-body">
+                    <h1 class="label label-warning">This action cannot be undone!</h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-warning" value="Delete"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Url Confirmation Modal -->
+<div class="modal fade" id="deleteUrlConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/deletecompetitorurl">
+                <input type="hidden" id="deleteUrl" name="url" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myDeleteLabel">Delete selected url?</h4>
                 </div>
                 <div class="modal-body">
                     <h1 class="label label-warning">This action cannot be undone!</h1>

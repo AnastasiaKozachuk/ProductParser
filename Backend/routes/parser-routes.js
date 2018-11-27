@@ -31,8 +31,7 @@ function configureEndpointsParser(app) {
     |||||||||||||||||||||||||| POST |||||||||||||||||||||||||||||
     -----------------------------------------------------------*/
 
-    app.post('/parseOneCompetitor', function (req, res) {
-
+    app.post('/parseOneCompetitor', async function (req, res) {
         Url.find({competitor: req.body._id, active:true}, function (err, docs) {
             if (err) throw err;
 
@@ -45,7 +44,7 @@ function configureEndpointsParser(app) {
             }
 
         }).then(function () {
-            res.redirect('/parser');
+            res.redirect('/analysis');
         });
 
 
@@ -83,7 +82,7 @@ function configureEndpointsParser(app) {
             }
 
         }).then(function () {
-            res.redirect('/parser');
+            res.redirect('/analysis');
         });
 
     });
